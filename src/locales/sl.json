@@ -1,0 +1,55 @@
+{
+  "RootLayout": {
+    "home_link": "Domov",
+    "about_link": "O nas",
+    "counter_link": "Števec",
+    "portfolio_link": "Portfelj",
+    "sign_in_link": "Prijava",
+    "sign_up_link": "Registracija"
+  },
+  "BaseTemplate": {
+    "description": "Začetna koda za vaš Nextjs Boilerplate s Tailwind CSS",
+    "made_with": "Narejeno z <author></author>."
+  },
+  "Dashboard": {
+    "meta_title": "Nadzorna plošča",
+    "hello_message": "Pozdravljeni {email}!",
+    "alternative_message": "Potrebujete napredne funkcije?",
+    "current_shift": "Trenutna izmena",
+    "shift_date": "Datum",
+    "shift_stats_title": "Statistika izmen ta mesec",
+    "days_count": "dni",
+    "ure_balance_title": "URE stanje (Shranjene ure)",
+    "days": "dni",
+    "hours": "ur",
+    "total_hours": "Skupaj: {hours} ur"
+  },
+  "Shifts": {
+    "shift_a": "Izmena A",
+    "shift_b": "Izmena B",
+    "shift_c": "Izmena C",
+    "shift_d": "Izmena D",
+    "off": "Prosto"
+  },
+  "Leaves": {
+    "sick": "Bolniška",
+    "vacation": "Dopust",
+    "ure_koriscenje": "Uporaba URE",
+    "other": "Drugo"
+  },
+  "ExtraHours": {
+    "nadure_isplacilo": "Nadure (izplačilo)",
+    "ure_koriscenje_bank": "URE (banka ur)"
+  },
+  "Calendar": {
+    "meta_title": "Koledar izmen"
+  },
+  "UserProfile": {
+    "meta_title": "Profil uporabnika"
+  },
+  "DashboardLayout": {
+    "dashboard_link": "Nadzorna plošča",
+    "user_profile_link": "Upravljanje računa",
+    "sign_out": "Odjava"
+  }
+}

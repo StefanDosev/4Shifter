@@ -62,7 +62,20 @@
   "Dashboard": {
     "meta_title": "Dashboard",
     "hello_message": "Hello {email}!",
-    "alternative_message": "Need advanced features? Multi-tenancy & Teams, Roles & Permissions, Shadcn UI, End-to-End Typesafety with oRPC, Stripe Payment, Light / Dark mode. Try <url></url>."
+    "alternative_message": "Need advanced features? Multi-tenancy & Teams, Roles & Permissions, Shadcn UI, End-to-End Typesafety with oRPC, Stripe Payment, Light / Dark mode. Try <url></url>.",
+    "current_shift": "Current Shift",
+    "shift_date": "Date",
+    "shift_stats_title": "Shift Statistics This Month",
+    "days_count": "days",
+    "ure_balance_title": "URE Balance (Banked Hours)",
+    "days": "days",
+    "hours": "hours",
+    "total_hours": "Total: {hours} hours"
+  },
+  "Calendar": {
+    "meta_title": "Shift Calendar",
+    "previous": "Previous",
+    "next": "Next"
   },
   "UserProfile": {
     "meta_title": "User Profile"

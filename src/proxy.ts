@@ -11,6 +11,10 @@ const handleI18nRouting = createMiddleware(routing);
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
   '/:locale/dashboard(.*)',
+  '/onboarding(.*)',
+  '/:locale/onboarding(.*)',
+  '/calendar(.*)',
+  '/:locale/calendar(.*)',
 ]);
 
 const isAuthPage = createRouteMatcher([
