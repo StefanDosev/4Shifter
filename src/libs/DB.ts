@@ -1,5 +1,5 @@
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import type * as schema from '@/models/Schema';
+import type * as schema from '@/models/Users';
 import { createDbConnection } from '@/utils/DBConnection';
 import { Env } from './Env';
 
