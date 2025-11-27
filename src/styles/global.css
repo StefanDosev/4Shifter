@@ -1,3 +1,94 @@
+/* Google Font - Space Grotesk */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
 @layer theme, base, clerk, components, utilities; /* Ensure Clerk is compatible with Tailwind CSS v4 */
 
 @import 'tailwindcss';
+
+/* Neobrutalism Design System */
+@theme {
+  /* Neobrutalism Color Palette */
+  --color-neo-white: #fdfdfd;
+  --color-neo-black: #1a1a1a;
+  --color-neo-pink: #ff90e8;
+  --color-neo-yellow: #ffc900;
+  --color-neo-cyan: #23a094;
+  --color-neo-violet: #b597f6;
+  --color-neo-blue: #90c6ff;
+
+  /* Box Shadow Utilities */
+  --shadow-neo: 4px 4px 0px 0px #1a1a1a;
+  --shadow-neo-sm: 2px 2px 0px 0px #1a1a1a;
+  --shadow-neo-hover: 2px 2px 0px 0px #1a1a1a;
+
+  /* Animations */
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-spin-slow: spin 8s linear infinite;
+  --animate-square-pop: square-pop 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-spin-step: spin-step 1.5s steps(4) infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes square-pop {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  @keyframes spin-step {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+@layer base {
+  /* Font Family */
+  * {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* Body Background */
+  body {
+    background-color: #f3f4f6;
+    color: #1a1a1a;
+  }
+
+  /* Custom Scrollbar - Neobrutalism Style */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-left: 2px solid #000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #000;
+    border: 2px solid #000;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #333;
+  }
+}

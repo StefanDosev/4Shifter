@@ -70,7 +70,16 @@
     "ure_balance_title": "URE Balance (Banked Hours)",
     "days": "days",
     "hours": "hours",
-    "total_hours": "Total: {hours} hours"
+    "total_hours": "Total: {hours} hours",
+    "total_nadure": "Paid Overtime (Nadure)",
+    "total_ure": "Banked Hours (Ure)",
+    "days_off_available": "Days Off Available",
+    "today": "Today",
+    "nadure": "Paid Overtime",
+    "ure": "Banked Hours",
+    "vacation": "Vacation",
+    "sick": "Sick Leave",
+    "save": "Save Changes"
   },
   "Calendar": {
     "meta_title": "Shift Calendar",

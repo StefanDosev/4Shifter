@@ -1,11 +1,15 @@
 'use client';
 
 import type { ScheduleItem } from './CalendarGrid';
-import { addMonths, subMonths } from 'date-fns';
+import { addMonths, format, subMonths } from 'date-fns';
+import { useLocale } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { updateDailyStats } from '@/actions/DailyStatsActions';
 import { getMonthlySchedule } from '@/actions/ShiftActions';
 import { CalendarGrid } from './CalendarGrid';
 import { CalendarHeader } from './CalendarHeader';
+
+import { DayDetailModal } from './DayDetailModal';
 
 type CalendarViewProps = {
   initialSchedule: any[]; // Using any[] to avoid strict type matching issues with server response
@@ -15,6 +19,8 @@ export function CalendarView({ initialSchedule }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [modalDate, setModalDate] = useState<string | null>(null);
+  const locale = useLocale();
 
   // Initialize with props
   useEffect(() => {
@@ -23,6 +29,9 @@ export function CalendarView({ initialSchedule }: CalendarViewProps) {
       shiftType: d.shift as any,
       isVacation: d.isVacation || false,
       isOverride: d.isOverride,
+      nadure: d.nadure || 0,
+      ure: d.ure || 0,
+      isSickLeave: d.isSickLeave || false,
     }));
     setSchedule(mapped);
   }, []); // Run once on mount to set initial
@@ -72,6 +81,9 @@ export function CalendarView({ initialSchedule }: CalendarViewProps) {
           shiftType: d.shift as any,
           isVacation: d.isVacation || false,
           isOverride: d.isOverride,
+          nadure: d.nadure || 0,
+          ure: d.ure || 0,
+          isSickLeave: d.isSickLeave || false,
         }));
         setSchedule(mapped);
       }
@@ -86,6 +98,65 @@ export function CalendarView({ initialSchedule }: CalendarViewProps) {
     setCurrentDate(prev => addMonths(prev, 1));
   };
 
+  const handleModalClose = () => {
+    setModalDate(null);
+    // Refresh the page to update stats cards
+    window.location.reload();
+  };
+
+  const handleDayClick = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    setModalDate(dateStr);
+  };
+
+  const handleUpdateDay = async (date: string, updates: any) => {
+    try {
+      // Optimistic update
+      setSchedule(prev => prev.map((item) => {
+        if (item.date === date) {
+          return { ...item, ...updates };
+        }
+        return item;
+      }));
+
+      // If item doesn't exist in schedule (e.g. empty day), add it
+      if (!schedule.find(s => s.date === date)) {
+        setSchedule(prev => [...prev, { date, shiftType: 'REST', isVacation: false, ...updates } as any]);
+      }
+
+      await updateDailyStats(date, updates);
+
+      // Refresh data to ensure consistency
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      const data = await getMonthlySchedule(month, year);
+      const mappedData = data.map(d => ({
+        date: d.date,
+        shiftType: d.shift as any,
+        isVacation: d.isVacation || false,
+        isOverride: d.isOverride,
+        nadure: d.nadure || 0,
+        ure: d.ure || 0,
+        isSickLeave: d.isSickLeave || false,
+      }));
+      setSchedule(mappedData);
+    } catch (error) {
+      console.error('Failed to update day', error);
+      // Revert on error (could be improved)
+    }
+  };
+
+  const getDayData = (dateStr: string) => {
+    const item = schedule.find(s => s.date === dateStr);
+    return {
+      date: dateStr,
+      nadure: (item as any)?.nadure || 0,
+      ure: (item as any)?.ure || 0,
+      isVacation: item?.isVacation || false,
+      isSickLeave: (item as any)?.isSickLeave || false,
+    };
+  };
+
   return (
     <div className="space-y-6">
       <CalendarHeader
@@ -98,32 +169,48 @@ export function CalendarView({ initialSchedule }: CalendarViewProps) {
         <CalendarGrid
           currentDate={currentDate}
           schedule={schedule}
+          onDayClick={handleDayClick}
         />
       </div>
 
+      {modalDate && (() => {
+        const item = schedule.find(s => s.date === modalDate);
+        return (
+          <DayDetailModal
+            isOpen={!!modalDate}
+            onClose={handleModalClose}
+            dateStr={modalDate}
+            data={getDayData(modalDate)}
+            onUpdate={handleUpdateDay}
+            locale={locale}
+            shiftType={(item?.shiftType as any) || 'REST'}
+          />
+        );
+      })()}
+
       {/* Legend */}
-      <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
-        <h3 className="mb-3 text-sm font-semibold text-gray-900">Legend</h3>
-        <div className="flex flex-wrap gap-4">
+      <div className="rounded-xl border-2 border-black bg-white p-4 shadow-neo">
+        <h3 className="mb-3 text-sm font-bold tracking-wide text-gray-900 uppercase">Legend</h3>
+        <div className="flex flex-wrap gap-3 text-xs font-bold">
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded border border-purple-300 bg-purple-100" />
-            <span className="text-xs text-gray-600">First Shift (I)</span>
+            <div className="h-4 w-4 rounded-full border-2 border-black bg-[#ffc900]" />
+            <span>Morning (I)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded border border-green-300 bg-green-100" />
-            <span className="text-xs text-gray-600">Second Shift (II)</span>
+            <div className="h-4 w-4 rounded-full border-2 border-black bg-[#23a094]" />
+            <span>Afternoon (II)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded border border-yellow-300 bg-yellow-100" />
-            <span className="text-xs text-gray-600">Night Shift (III)</span>
+            <div className="h-4 w-4 rounded-full border-2 border-black bg-[#b597f6]" />
+            <span>Night (III)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded border border-gray-200 bg-gray-50" />
-            <span className="text-xs text-gray-600">Rest / Off</span>
+            <div className="h-4 w-4 rounded-full border-2 border-black bg-white" />
+            <span>Rest / Off</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded border border-blue-300 bg-blue-100" />
-            <span className="text-xs text-gray-600">Vacation</span>
+            <div className="h-4 w-4 rounded-full border-2 border-black bg-[#90c6ff]" />
+            <span>Vacation</span>
           </div>
         </div>
       </div>

@@ -60,3 +60,11 @@ export async function checkNeedsOnboarding(): Promise<boolean> {
   // If user doesn't exist, they need onboarding
   return !user;
 }
+
+/**
+ * Get the current user's shift group
+ */
+export async function getUserShiftGroup(): Promise<'A' | 'B' | 'C' | 'D'> {
+  const user = await getCurrentUser();
+  return user.shiftGroup;
+}

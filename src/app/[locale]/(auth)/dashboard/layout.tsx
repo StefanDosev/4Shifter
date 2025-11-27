@@ -10,10 +10,8 @@ export default async function DashboardLayout(props: {
 }) {
   const { locale } = await props.params;
   setRequestLocale(locale);
-  const t = await getTranslations({
-    locale,
-    namespace: 'DashboardLayout',
-  });
+
+  const t = await getTranslations({ locale, namespace: 'DashboardLayout' });
 
   return (
     <BaseTemplate
@@ -21,18 +19,26 @@ export default async function DashboardLayout(props: {
         <>
           <li>
             <Link
-              href="/dashboard/"
-              className="border-none text-gray-700 hover:text-gray-900"
+              href="/dashboard"
+              className="font-bold decoration-2 underline-offset-4 hover:underline"
             >
-              {t('dashboard_link')}
+              Home
             </Link>
           </li>
           <li>
             <Link
-              href="/dashboard/user-profile/"
-              className="border-none text-gray-700 hover:text-gray-900"
+              href="/dashboard/user-profile"
+              className="font-bold decoration-2 underline-offset-4 hover:underline"
             >
               {t('user_profile_link')}
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/dashboard/settings"
+              className="font-bold decoration-2 underline-offset-4 hover:underline"
+            >
+              Settings
             </Link>
           </li>
         </>
@@ -41,12 +47,14 @@ export default async function DashboardLayout(props: {
         <>
           <li>
             <SignOutButton>
-              <button className="border-none text-gray-700 hover:text-gray-900" type="button">
+              <button
+                type="button"
+                className="font-bold decoration-2 underline-offset-4 hover:underline"
+              >
                 {t('sign_out')}
               </button>
             </SignOutButton>
           </li>
-
           <li>
             <LocaleSwitcher />
           </li>

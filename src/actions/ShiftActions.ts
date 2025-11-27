@@ -3,6 +3,7 @@
 import { eachDayOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
 import { and, eq, gte, lte } from 'drizzle-orm';
 import { db } from '@/libs/DB';
+import { dailyStats } from '@/models/DailyStats';
 import { shiftOverrides } from '@/models/Shifts';
 import { calculateShift } from '@/utils/ShiftCalculator';
 
@@ -26,27 +27,47 @@ export async function getMonthlySchedule(month: number, year: number) {
       ),
     );
 
+  // Get all daily stats for the month
+  const stats = await db
+    .select()
+    .from(dailyStats)
+    .where(
+      and(
+        eq(dailyStats.userId, user.id),
+        gte(dailyStats.date, format(startDate, 'yyyy-MM-dd')),
+        lte(dailyStats.date, format(endDate, 'yyyy-MM-dd')),
+      ),
+    );
+
   // Build the schedule for each day
   const days = eachDayOfInterval({ start: startDate, end: endDate });
   const schedule = days.map((date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     const override = overrides.find(o => o.date === dateStr);
+    const stat = stats.find(s => s.date === dateStr);
+
+    let shiftType = 'REST';
+    let isOverride = false;
+    let reason: string | undefined;
 
     if (override) {
-      return {
-        date: dateStr,
-        shift: override.newShift,
-        isOverride: true,
-        reason: override.reason,
-      };
+      shiftType = override.newShift;
+      isOverride = true;
+      reason = override.reason || undefined;
+    } else {
+      const result = calculateShift(date, user.shiftGroup);
+      shiftType = result.shiftType;
     }
 
-    const result = calculateShift(date, user.shiftGroup);
     return {
       date: dateStr,
-      shift: result.shiftType,
-      isOverride: false,
-      isVacation: result.isVacation,
+      shift: shiftType,
+      isOverride,
+      reason,
+      nadure: stat?.nadure || 0,
+      ure: stat?.ure || 0,
+      isVacation: stat?.isVacation || false,
+      isSickLeave: stat?.isSickLeave || false,
     };
   });
 

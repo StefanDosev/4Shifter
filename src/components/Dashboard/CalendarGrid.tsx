@@ -23,9 +23,10 @@ export type ScheduleItem = {
 type CalendarGridProps = {
   currentDate: Date;
   schedule: ScheduleItem[];
+  onDayClick?: (date: Date) => void;
 };
 
-export function CalendarGrid({ currentDate, schedule }: CalendarGridProps) {
+export function CalendarGrid({ currentDate, schedule, onDayClick }: CalendarGridProps) {
   // Calculate the days to display
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(monthStart);
@@ -37,7 +38,7 @@ export function CalendarGrid({ currentDate, schedule }: CalendarGridProps) {
     end: endDate,
   });
 
-  const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const WEEKDAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   // Helper to find schedule for a specific date
   const getScheduleForDate = (date: Date) => {
@@ -46,13 +47,13 @@ export function CalendarGrid({ currentDate, schedule }: CalendarGridProps) {
   };
 
   return (
-    <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+    <div className="rounded-xl border-2 border-black bg-white p-4 shadow-neo sm:p-6">
       {/* Weekday Headers */}
-      <div className="mb-4 grid grid-cols-7 gap-2">
+      <div className="mb-2 grid grid-cols-7 gap-2 sm:mb-4">
         {WEEKDAY_NAMES.map(day => (
           <div
             key={day}
-            className="text-center text-sm font-semibold text-gray-500"
+            className="text-center text-xs font-bold text-gray-400 uppercase sm:text-sm"
           >
             {day}
           </div>
@@ -60,7 +61,7 @@ export function CalendarGrid({ currentDate, schedule }: CalendarGridProps) {
       </div>
 
       {/* Days Grid */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-2 sm:gap-4">
         {days.map((day) => {
           const scheduleItem = getScheduleForDate(day);
           const isCurrentMonth = isSameMonth(day, monthStart);
@@ -71,8 +72,12 @@ export function CalendarGrid({ currentDate, schedule }: CalendarGridProps) {
               date={day}
               shiftType={scheduleItem?.shiftType || 'REST'}
               isVacation={scheduleItem?.isVacation || false}
+              isSickLeave={(scheduleItem as any)?.isSickLeave || false}
+              nadure={(scheduleItem as any)?.nadure || 0}
+              ure={(scheduleItem as any)?.ure || 0}
               isOverride={scheduleItem?.isOverride || false}
               isCurrentMonth={isCurrentMonth}
+              onClick={() => onDayClick?.(day)}
             />
           );
         })}
