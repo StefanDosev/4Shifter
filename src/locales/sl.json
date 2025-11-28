@@ -1,6 +1,6 @@
 {
   "RootLayout": {
-    "home_link": "Domov",
+    "dashboard_link": "Nadzorna plošča",
     "about_link": "O nas",
     "counter_link": "Števec",
     "portfolio_link": "Portfelj",
@@ -11,7 +11,7 @@
     "description": "Začetna koda za vaš Nextjs Boilerplate s Tailwind CSS",
     "made_with": "Narejeno z <author></author>."
   },
-  "Dashboard": {
+  "Home": {
     "meta_title": "Nadzorna plošča",
     "hello_message": "Pozdravljeni {email}!",
     "alternative_message": "Potrebujete napredne funkcije?",
@@ -47,7 +47,7 @@
   "UserProfile": {
     "meta_title": "Profil uporabnika"
   },
-  "DashboardLayout": {
+  "HomeLayout": {
     "dashboard_link": "Nadzorna plošča",
     "user_profile_link": "Upravljanje računa",
     "sign_out": "Odjava"

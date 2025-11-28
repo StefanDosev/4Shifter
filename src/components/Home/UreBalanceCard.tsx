@@ -6,7 +6,7 @@ type UreBalanceCardProps = {
 };
 
 export function UreBalanceCard({ ureHours }: UreBalanceCardProps) {
-  const t = useTranslations('Dashboard');
+  const t = useTranslations('Home');
   const ureDays = Math.floor(ureHours / 8); // Assuming 8-hour workday
 
   return (

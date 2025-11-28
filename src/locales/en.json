@@ -1,6 +1,6 @@
 {
   "RootLayout": {
-    "home_link": "Home",
+    "dashboard_link": "Dashboard",
     "about_link": "About",
     "counter_link": "Counter",
     "portfolio_link": "Portfolio",
@@ -59,8 +59,8 @@
     "meta_title": "Sign up",
     "meta_description": "Effortlessly create an account through our intuitive sign-up process."
   },
-  "Dashboard": {
-    "meta_title": "Dashboard",
+  "Home": {
+    "meta_title": "Home",
     "hello_message": "Hello {email}!",
     "alternative_message": "Need advanced features? Multi-tenancy & Teams, Roles & Permissions, Shadcn UI, End-to-End Typesafety with oRPC, Stripe Payment, Light / Dark mode. Try <url></url>.",
     "current_shift": "Current Shift",
@@ -89,7 +89,7 @@
   "UserProfile": {
     "meta_title": "User Profile"
   },
-  "DashboardLayout": {
+  "HomeLayout": {
     "dashboard_link": "Dashboard",
     "user_profile_link": "Manage your account",
     "sign_out": "Sign out"

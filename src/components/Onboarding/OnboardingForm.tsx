@@ -40,7 +40,7 @@ export function OnboardingForm() {
       await updateShiftGroup(selected);
 
       // Force a hard navigation instead of client-side
-      window.location.href = '/dashboard';
+      window.location.href = '/home';
     } catch {
       setIsSubmitting(false);
     }

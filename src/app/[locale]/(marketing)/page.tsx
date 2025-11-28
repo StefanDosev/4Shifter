@@ -24,7 +24,7 @@ export default function LandingPage() {
     setIsLoading(true);
     // Simulate loading delay for effect, then navigate
     setTimeout(() => {
-      router.push('/dashboard');
+      router.push('/home');
     }, 1500);
   };
 

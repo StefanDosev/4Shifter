@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { getMonthlySchedule } from '@/actions/ShiftActions';
-import { CalendarView } from '@/components/Dashboard/CalendarView';
+import { CalendarView } from '@/components/Home/CalendarView';
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string }>;

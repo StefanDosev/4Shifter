@@ -13,7 +13,7 @@ const SHIFT_ICON_COLORS = {
 };
 
 export function StatsCard({ stats }: StatsCardProps) {
-  const t = useTranslations('Dashboard');
+  const t = useTranslations('Home');
 
   return (
     <div className="rounded-xl border-2 border-black bg-white p-6 shadow-neo">

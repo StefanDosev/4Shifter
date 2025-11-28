@@ -9,7 +9,7 @@ type StatsBarProps = {
 };
 
 export function StatsBar({ nadureTotal, ureTotal }: StatsBarProps) {
-  const t = useTranslations('Dashboard');
+  const t = useTranslations('Home');
   const daysOff = Math.floor(ureTotal / 8); // Assuming 8 hour work day
 
   return (

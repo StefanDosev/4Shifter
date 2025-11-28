@@ -5,9 +5,9 @@ import { redirect } from 'next/navigation';
 import { getMonthlyTotals } from '@/actions/DailyStatsActions';
 import { getMonthlySchedule } from '@/actions/ShiftActions';
 import { checkNeedsOnboarding, getUserShiftGroup } from '@/actions/UserActions';
-import { CalendarView } from '@/components/Dashboard/CalendarView';
-import { SmartWidget } from '@/components/Dashboard/SmartWidget';
-import { StatsBar } from '@/components/Dashboard/StatsBar';
+import { CalendarView } from '@/components/Home/CalendarView';
+import { SmartWidget } from '@/components/Home/SmartWidget';
+import { StatsBar } from '@/components/Home/StatsBar';
 import { calculateDaysUntilOff } from '@/utils/shiftUtils';
 
 export async function generateMetadata(props: {
@@ -16,7 +16,7 @@ export async function generateMetadata(props: {
   const { locale } = await props.params;
   const t = await getTranslations({
     locale,
-    namespace: 'Dashboard',
+    namespace: 'Home',
   });
 
   return {
@@ -24,7 +24,7 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function Dashboard() {
+export default async function Home() {
   const { userId } = await auth();
 
   if (!userId) {
@@ -59,7 +59,7 @@ export default async function Dashboard() {
 
   return (
     <div className="py-4 sm:py-6">
-      <h1 className="mb-6 text-3xl font-black sm:mb-8 sm:text-4xl">Dashboard</h1>
+      <h1 className="mb-6 text-3xl font-black sm:mb-8 sm:text-4xl">Home</h1>
 
       {/* Smart Widget - Today's shift */}
       <SmartWidget currentShift={currentShift} daysUntilOff={daysUntilOff} />

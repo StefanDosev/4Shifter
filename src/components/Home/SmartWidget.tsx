@@ -9,7 +9,7 @@ type SmartWidgetProps = {
 };
 
 export function SmartWidget({ currentShift, daysUntilOff }: SmartWidgetProps) {
-  const t = useTranslations('Dashboard');
+  const t = useTranslations('Home');
   const locale = useLocale();
   const shiftDef = SHIFT_DEFINITIONS[currentShift];
   const shiftLabel = locale === 'sl' ? shiftDef.labelSl : shiftDef.labelEn;

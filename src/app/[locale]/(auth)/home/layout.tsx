@@ -4,14 +4,14 @@ import Link from 'next/link';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 
-export default async function DashboardLayout(props: {
+export default async function HomeLayout(props: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  const t = await getTranslations({ locale, namespace: 'DashboardLayout' });
+  const t = await getTranslations({ locale, namespace: 'HomeLayout' });
 
   return (
     <BaseTemplate
@@ -19,15 +19,15 @@ export default async function DashboardLayout(props: {
         <>
           <li>
             <Link
-              href="/dashboard"
+              href="/home"
               className="font-bold decoration-2 underline-offset-4 hover:underline"
             >
-              Home
+              {t('dashboard_link')}
             </Link>
           </li>
           <li>
             <Link
-              href="/dashboard/user-profile"
+              href="/home/user-profile"
               className="font-bold decoration-2 underline-offset-4 hover:underline"
             >
               {t('user_profile_link')}
@@ -35,7 +35,7 @@ export default async function DashboardLayout(props: {
           </li>
           <li>
             <Link
-              href="/dashboard/settings"
+              href="/home/settings"
               className="font-bold decoration-2 underline-offset-4 hover:underline"
             >
               Settings
