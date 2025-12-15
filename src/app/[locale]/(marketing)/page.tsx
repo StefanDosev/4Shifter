@@ -1,6 +1,7 @@
 'use client';
 
 import type { ShiftGroup } from '@/types';
+import { format } from 'date-fns';
 import { ArrowRight, Calendar, Clock, Coins, Shield, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -102,7 +103,7 @@ export default function LandingPage() {
                     <h2 className="text-xl font-black">Who is working today?</h2>
                   </div>
                   <span className="rounded bg-black px-2 py-1 text-sm font-bold text-white">
-                    {today.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
+                    {format(today, 'EEE, d MMM')}
                   </span>
                 </div>
 
@@ -198,10 +199,28 @@ export default function LandingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded border-2 border-transparent bg-white font-black text-black">4</div>
             <span className="text-xl font-bold">4Shifter</span>
           </div>
+          <div className="flex items-center gap-6">
+            <button
+              type="button"
+              onClick={() => router.push('/privacy')}
+              className="text-sm text-gray-400 transition-colors hover:text-white"
+            >
+              Privacy Policy
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push('/terms')}
+              className="text-sm text-gray-400 transition-colors hover:text-white"
+            >
+              Terms of Service
+            </button>
+          </div>
           <p className="font-mono text-sm text-gray-400">
-            Internal Tool •
+            ©
             {' '}
             {new Date().getFullYear()}
+            {' '}
+            4Shifter
           </p>
         </div>
       </footer>

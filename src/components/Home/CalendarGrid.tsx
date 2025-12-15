@@ -17,6 +17,13 @@ export type ScheduleItem = {
   date: string; // YYYY-MM-DD
   shiftType: ShiftType;
   isVacation: boolean;
+  isSickLeave?: boolean;
+  isFlexTime?: boolean;
+  isHoliday?: boolean;
+  holidayName?: string | null;
+  nadure?: number;
+  ure?: number;
+  workedShiftType?: 'I' | 'II' | 'III' | 'REST';
   isOverride?: boolean;
 };
 
@@ -72,12 +79,16 @@ export function CalendarGrid({ currentDate, schedule, onDayClick }: CalendarGrid
               date={day}
               shiftType={scheduleItem?.shiftType || 'REST'}
               isVacation={scheduleItem?.isVacation || false}
-              isSickLeave={(scheduleItem as any)?.isSickLeave || false}
-              nadure={(scheduleItem as any)?.nadure || 0}
-              ure={(scheduleItem as any)?.ure || 0}
+              isSickLeave={scheduleItem?.isSickLeave || false}
+              isFlexTime={scheduleItem?.isFlexTime || false}
+              isHoliday={scheduleItem?.isHoliday || false}
+              holidayName={scheduleItem?.holidayName}
+              nadure={scheduleItem?.nadure || 0}
+              ure={scheduleItem?.ure || 0}
+              workedShiftType={scheduleItem?.workedShiftType} // Added workedShiftType
               isOverride={scheduleItem?.isOverride || false}
               isCurrentMonth={isCurrentMonth}
-              onClick={() => onDayClick?.(day)}
+              onClickAction={() => onDayClick?.(day)}
             />
           );
         })}

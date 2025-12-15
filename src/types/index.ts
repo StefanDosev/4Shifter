@@ -8,6 +8,8 @@ export type DailyStats = {
   ure: number;
   isVacation: boolean;
   isSickLeave: boolean;
+  isFlexTime: boolean;
+  isHoliday: boolean;
 };
 
 export type UserData = {

@@ -18,7 +18,7 @@ export const Navbar = ({ leftNav, rightNav }: NavbarProps) => {
 
         {/* Logo Section */}
         <div className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/home" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-neo-yellow text-xl font-black shadow-sm">
               4
             </div>

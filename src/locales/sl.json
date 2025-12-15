@@ -29,19 +29,6 @@
     "shift_b": "Izmena B",
     "shift_c": "Izmena C",
     "shift_d": "Izmena D",
-    "off": "Prosto"
-  },
-  "Leaves": {
-    "sick": "Bolniška",
-    "vacation": "Dopust",
-    "ure_koriscenje": "Uporaba URE",
-    "other": "Drugo"
-  },
-  "ExtraHours": {
-    "nadure_isplacilo": "Nadure (izplačilo)",
-    "ure_koriscenje_bank": "URE (banka ur)"
-  },
-  "Calendar": {
     "meta_title": "Koledar izmen"
   },
   "UserProfile": {
@@ -51,5 +38,13 @@
     "dashboard_link": "Nadzorna plošča",
     "user_profile_link": "Upravljanje računa",
     "sign_out": "Odjava"
+  },
+  "Privacy": {
+    "meta_title": "Politika zasebnosti",
+    "meta_description": "Preberite, kako zbiramo, uporabljamo in varujemo vaše osebne podatke."
+  },
+  "Terms": {
+    "meta_title": "Pogoji uporabe",
+    "meta_description": "Preberite naše pogoje za uporabo storitve 4Shifter."
   }
 }

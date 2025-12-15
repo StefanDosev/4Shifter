@@ -68,6 +68,9 @@ export async function getMonthlySchedule(month: number, year: number) {
       ure: stat?.ure || 0,
       isVacation: stat?.isVacation || false,
       isSickLeave: stat?.isSickLeave || false,
+      isFlexTime: stat?.isFlexTime || false,
+      isHoliday: stat?.isHoliday || false,
+      workedShiftType: stat?.workedShiftType,
     };
   });
 
@@ -100,4 +103,161 @@ export async function getShiftStats(month: number, year: number) {
   }, {} as Record<string, number>);
 
   return stats;
+}
+
+export async function getYearlyNadureStats(year: number) {
+  const user = await getCurrentUser();
+
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+
+  const stats = await db
+    .select()
+    .from(dailyStats)
+    .where(
+      and(
+        eq(dailyStats.userId, user.id),
+        gte(dailyStats.date, startDate),
+        lte(dailyStats.date, endDate),
+      ),
+    );
+
+  // Group by month
+  const monthlyStats = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    nadure: 0,
+  }));
+
+  stats.forEach((stat) => {
+    const date = new Date(stat.date);
+    const monthIndex = date.getMonth(); // 0-11
+    if (monthlyStats[monthIndex]) {
+      monthlyStats[monthIndex].nadure += stat.nadure || 0;
+    }
+  });
+
+  return monthlyStats;
+}
+
+export async function getYearlyShiftStats(year: number) {
+  const user = await getCurrentUser();
+
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+
+  // Get all shift overrides for the year
+  const overrides = await db
+    .select()
+    .from(shiftOverrides)
+    .where(
+      and(
+        eq(shiftOverrides.userId, user.id),
+        gte(shiftOverrides.date, startDate),
+        lte(shiftOverrides.date, endDate),
+      ),
+    );
+
+  // Calculate shifts for every day of the year
+  const days = eachDayOfInterval({
+    start: new Date(year, 0, 1),
+    end: new Date(year, 11, 31),
+  });
+
+  const stats = {
+    I: 0,
+    II: 0,
+    III: 0,
+    REST: 0,
+  };
+
+  days.forEach((date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const override = overrides.find(o => o.date === dateStr);
+
+    let shiftType = 'REST';
+
+    if (override) {
+      shiftType = override.newShift;
+    } else {
+      const result = calculateShift(date, user.shiftGroup);
+      shiftType = result.shiftType;
+    }
+
+    if (shiftType !== 'OFF' && stats[shiftType as keyof typeof stats] !== undefined) {
+      stats[shiftType as keyof typeof stats]++;
+    }
+  });
+
+  return stats;
+}
+
+export async function getMonthlyAggregatedStats(month: number, year: number) {
+  const schedule = await getMonthlySchedule(month, year);
+
+  const stats = {
+    I: 0,
+    II: 0,
+    III: 0,
+    REST: 0,
+    sickLeave: 0,
+    vacation: 0,
+    flexTime: 0,
+    totalNadure: 0,
+    totalUre: 0,
+  };
+
+  schedule.forEach((day) => {
+    if (day.shift !== 'OFF' && stats[day.shift as keyof typeof stats] !== undefined) {
+      stats[day.shift as keyof typeof stats]++;
+    }
+    if (day.isSickLeave) {
+      stats.sickLeave++;
+    }
+    if (day.isVacation) {
+      stats.vacation++;
+    }
+    if (day.isFlexTime) {
+      stats.flexTime++;
+    }
+    stats.totalNadure += day.nadure;
+    stats.totalUre += day.ure;
+  });
+
+  return stats;
+}
+
+export async function getYearlyTrend(year: number) {
+  const user = await getCurrentUser();
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+
+  const stats = await db
+    .select()
+    .from(dailyStats)
+    .where(
+      and(
+        eq(dailyStats.userId, user.id),
+        gte(dailyStats.date, startDate),
+        lte(dailyStats.date, endDate),
+      ),
+    );
+
+  const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    nadure: 0,
+    sickLeave: 0,
+  }));
+
+  stats.forEach((stat) => {
+    const date = new Date(stat.date);
+    const monthIndex = date.getMonth();
+    if (monthlyData[monthIndex]) {
+      monthlyData[monthIndex].nadure += stat.nadure || 0;
+      if (stat.isSickLeave) {
+        monthlyData[monthIndex].sickLeave++;
+      }
+    }
+  });
+
+  return monthlyData;
 }

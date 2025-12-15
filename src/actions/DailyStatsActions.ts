@@ -5,6 +5,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { db } from '@/libs/DB';
 import { dailyStats } from '@/models/DailyStats';
 import { users } from '@/models/Users';
+import { FLEX_TIME_DAYS_PER_YEAR, VACATION_DAYS_PER_YEAR } from '@/utils/HolidayConfig';
 
 async function getDbUser(clerkId: string) {
   const [user] = await db
@@ -44,8 +45,11 @@ export async function updateDailyStats(
   data: {
     nadure?: number;
     ure?: number;
+    workedShiftType?: 'I' | 'II' | 'III' | null;
     isVacation?: boolean;
     isSickLeave?: boolean;
+    isFlexTime?: boolean;
+    isHoliday?: boolean;
   },
 ) {
   const { userId: clerkId } = await auth();
@@ -60,6 +64,50 @@ export async function updateDailyStats(
   // Check if record exists
   const existing = await getDailyStats(date);
 
+  // Handle vacation balance updates
+  if (data.isVacation !== undefined) {
+    const wasVacation = existing?.isVacation || false;
+    if (data.isVacation && !wasVacation) {
+      // Selecting vacation - check balance and increment
+      const remaining = VACATION_DAYS_PER_YEAR - (user.vacationDaysUsed || 0);
+      if (remaining <= 0) {
+        throw new Error('No vacation days remaining');
+      }
+      await db
+        .update(users)
+        .set({ vacationDaysUsed: (user.vacationDaysUsed || 0) + 1 })
+        .where(eq(users.id, userId));
+    } else if (!data.isVacation && wasVacation) {
+      // Unselecting vacation - decrement
+      await db
+        .update(users)
+        .set({ vacationDaysUsed: Math.max(0, (user.vacationDaysUsed || 0) - 1) })
+        .where(eq(users.id, userId));
+    }
+  }
+
+  // Handle flex time balance updates
+  if (data.isFlexTime !== undefined) {
+    const wasFlexTime = existing?.isFlexTime || false;
+    if (data.isFlexTime && !wasFlexTime) {
+      // Selecting flex time - check balance and increment
+      const remaining = FLEX_TIME_DAYS_PER_YEAR - (user.flexTimeDaysUsed || 0);
+      if (remaining <= 0) {
+        throw new Error('No flex time days remaining');
+      }
+      await db
+        .update(users)
+        .set({ flexTimeDaysUsed: (user.flexTimeDaysUsed || 0) + 1 })
+        .where(eq(users.id, userId));
+    } else if (!data.isFlexTime && wasFlexTime) {
+      // Unselecting flex time - decrement
+      await db
+        .update(users)
+        .set({ flexTimeDaysUsed: Math.max(0, (user.flexTimeDaysUsed || 0) - 1) })
+        .where(eq(users.id, userId));
+    }
+  }
+
   if (existing) {
     // Update existing record
     await db
@@ -73,8 +121,11 @@ export async function updateDailyStats(
       date,
       nadure: data.nadure || 0,
       ure: data.ure || 0,
+      workedShiftType: data.workedShiftType,
       isVacation: data.isVacation || false,
       isSickLeave: data.isSickLeave || false,
+      isFlexTime: data.isFlexTime || false,
+      isHoliday: data.isHoliday || false,
     });
   }
 
@@ -95,23 +146,32 @@ export async function getMonthlyTotals(month: number, year: number) {
   const lastDay = new Date(year, month, 0).getDate();
   const endDate = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
 
-  const result = await db
-    .select({
-      totalNadure: sql<number>`COALESCE(SUM(${dailyStats.nadure}), 0)`,
-      totalUre: sql<number>`COALESCE(SUM(${dailyStats.ure}), 0)`,
-    })
-    .from(dailyStats)
-    .where(
-      and(
-        eq(dailyStats.userId, userId),
-        sql`${dailyStats.date} >= ${startDate}`,
-        sql`${dailyStats.date} <= ${endDate}`,
+  const [nadureResult, ureResult] = await Promise.all([
+    // Monthly Nadure
+    db
+      .select({
+        total: sql<number>`COALESCE(SUM(${dailyStats.nadure}), 0)`,
+      })
+      .from(dailyStats)
+      .where(
+        and(
+          eq(dailyStats.userId, userId),
+          sql`${dailyStats.date} >= ${startDate}`,
+          sql`${dailyStats.date} <= ${endDate}`,
+        ),
       ),
-    );
+    // Global Ure (Banked Hours)
+    db
+      .select({
+        total: sql<number>`COALESCE(SUM(${dailyStats.ure}), 0)`,
+      })
+      .from(dailyStats)
+      .where(eq(dailyStats.userId, userId)),
+  ]);
 
   return {
-    totalNadure: Number(result[0]?.totalNadure || 0),
-    totalUre: Number(result[0]?.totalUre || 0),
+    totalNadure: Number(nadureResult[0]?.total || 0),
+    totalUre: Number(ureResult[0]?.total || 0),
   };
 }
 

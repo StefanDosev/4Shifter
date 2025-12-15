@@ -19,7 +19,7 @@ export default async function HomeLayout(props: {
         <>
           <li>
             <Link
-              href="/home"
+              href="/home/dashboard"
               className="font-bold decoration-2 underline-offset-4 hover:underline"
             >
               {t('dashboard_link')}

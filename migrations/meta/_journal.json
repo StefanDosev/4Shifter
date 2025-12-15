@@ -50,6 +50,48 @@
       "when": 1764188989436,
       "tag": "0006_blushing_venus",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1764362203010,
+      "tag": "0007_wandering_prism",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1765792298056,
+      "tag": "0008_lying_kronos",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1765792393740,
+      "tag": "0009_quiet_iron_lad",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1765793716010,
+      "tag": "0010_soft_colonel_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1765794037899,
+      "tag": "0011_simple_skaar",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1765795958274,
+      "tag": "0012_even_tomas",
+      "breakpoints": true
     }
   ]
 }

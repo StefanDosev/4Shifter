@@ -10,26 +10,36 @@ type CalendarDayProps = {
   shiftType: ShiftType;
   isVacation: boolean;
   isSickLeave?: boolean;
+  isFlexTime?: boolean;
+  isHoliday?: boolean;
+  holidayName?: string | null;
   nadure?: number;
   ure?: number;
+  workedShiftType?: ShiftType;
   isOverride: boolean;
   isCurrentMonth: boolean;
-  onClick?: () => void;
+  onClickAction?: () => void;
 };
 
 const VACATION_COLOR = 'bg-[#90c6ff]'; // neo-blue
 const SICK_COLOR = 'bg-red-300';
+const FLEX_TIME_COLOR = 'bg-purple-200';
+const HOLIDAY_COLOR = 'bg-pink-200';
 
 export function CalendarDay({
   date,
   shiftType,
   isVacation,
   isSickLeave = false,
+  isFlexTime = false,
+  isHoliday = false,
+  holidayName,
   nadure = 0,
   ure = 0,
+  workedShiftType,
   isOverride,
   isCurrentMonth,
-  onClick,
+  onClickAction,
 }: CalendarDayProps) {
   const dayNumber = date.getDate();
   const today = new Date();
@@ -47,8 +57,16 @@ export function CalendarDay({
     bgClass = VACATION_COLOR;
   }
 
+  if (isFlexTime) {
+    bgClass = FLEX_TIME_COLOR;
+  }
+
   if (isSickLeave) {
     bgClass = SICK_COLOR;
+  }
+
+  if (isHoliday) {
+    bgClass = HOLIDAY_COLOR;
   }
 
   // Opacity for non-current month days
@@ -57,9 +75,9 @@ export function CalendarDay({
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={onClickAction}
       className={`
-        relative flex aspect-[4/5] w-full flex-col justify-between rounded-xl border-2 border-black p-1 transition-all hover:-translate-y-1 hover:shadow-neo-hover sm:aspect-square sm:p-2
+        relative flex aspect-4/5 w-full flex-col justify-between rounded-xl border-2 border-black p-1 transition-all hover:-translate-y-1 hover:shadow-neo-hover sm:aspect-square sm:p-2
         ${bgClass} ${opacityClass}
         ${isToday ? 'ring-4 ring-black ring-offset-2' : ''}
       `}
@@ -68,7 +86,12 @@ export function CalendarDay({
         <span className={`text-sm font-bold ${shiftType === 'REST' ? 'text-gray-400' : 'text-black'}`}>
           {dayNumber}
         </span>
-        {shiftType !== 'REST' && !isVacation && !isSickLeave && (
+        {workedShiftType && (
+          <span className="rounded border border-black bg-green-400 px-1 text-[10px] font-black shadow-sm">
+            {workedShiftType}
+          </span>
+        )}
+        {!workedShiftType && shiftType !== 'REST' && !isVacation && !isSickLeave && !isFlexTime && !isHoliday && (
           <span className="rounded border border-black bg-white px-1 text-[10px] font-black">
             {shiftType}
           </span>
@@ -95,6 +118,18 @@ export function CalendarDay({
         )}
         {isVacation && <Palmtree size={16} className="mx-auto text-black" />}
         {isSickLeave && <Pill size={16} className="mx-auto text-black" />}
+        {isFlexTime && <span className="mx-auto text-[10px] font-bold">FLEX</span>}
+        {isHoliday && (
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold">HOL</span>
+            {holidayName && (
+              <span className="text-center text-[8px] leading-tight">
+                {holidayName.substring(0, 8)}
+                ...
+              </span>
+            )}
+          </div>
+        )}
         {isOverride && (
           <span className="rounded-sm border border-black bg-red-500 px-1 text-[10px] font-bold text-white">
             *

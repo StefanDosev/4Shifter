@@ -1,0 +1,1 @@
+ALTER TABLE "daily_stats" ADD COLUMN "worked_shift_type" text;

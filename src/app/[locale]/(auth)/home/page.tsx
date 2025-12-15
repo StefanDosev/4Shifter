@@ -5,9 +5,9 @@ import { redirect } from 'next/navigation';
 import { getMonthlyTotals } from '@/actions/DailyStatsActions';
 import { getMonthlySchedule } from '@/actions/ShiftActions';
 import { checkNeedsOnboarding, getUserShiftGroup } from '@/actions/UserActions';
-import { CalendarView } from '@/components/Home/CalendarView';
+import { getAllBalances } from '@/actions/UserStatsActions';
+import { DashboardWrapper } from '@/components/Home/DashboardWrapper';
 import { SmartWidget } from '@/components/Home/SmartWidget';
-import { StatsBar } from '@/components/Home/StatsBar';
 import { calculateDaysUntilOff } from '@/utils/shiftUtils';
 
 export async function generateMetadata(props: {
@@ -43,10 +43,11 @@ export default async function Home() {
   const currentYear = now.getFullYear();
 
   // Fetch data in parallel
-  const [schedule, totals, userGroup] = await Promise.all([
+  const [schedule, totals, userGroup, balances] = await Promise.all([
     getMonthlySchedule(currentMonth, currentYear),
     getMonthlyTotals(currentMonth, currentYear),
     getUserShiftGroup(),
+    getAllBalances(),
   ]);
 
   // Get today's shift
@@ -64,11 +65,12 @@ export default async function Home() {
       {/* Smart Widget - Today's shift */}
       <SmartWidget currentShift={currentShift} daysUntilOff={daysUntilOff} />
 
-      {/* Stats Bar - 3 colored cards */}
-      <StatsBar nadureTotal={totals.totalNadure} ureTotal={totals.totalUre} />
-
-      {/* Calendar View */}
-      <CalendarView initialSchedule={schedule} />
+      {/* Dashboard Wrapper - Manages state and displays StatsBar + Calendar */}
+      <DashboardWrapper
+        initialSchedule={schedule}
+        initialTotals={totals}
+        balances={balances}
+      />
     </div>
   );
 }

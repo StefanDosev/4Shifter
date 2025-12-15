@@ -79,7 +79,8 @@
     "ure": "Banked Hours",
     "vacation": "Vacation",
     "sick": "Sick Leave",
-    "save": "Save Changes"
+    "save": "Save Changes",
+    "flexTime": "Flex Time"
   },
   "Calendar": {
     "meta_title": "Shift Calendar",
@@ -93,5 +94,13 @@
     "dashboard_link": "Dashboard",
     "user_profile_link": "Manage your account",
     "sign_out": "Sign out"
+  },
+  "Privacy": {
+    "meta_title": "Privacy Policy",
+    "meta_description": "Learn how we collect, use, and protect your personal data."
+  },
+  "Terms": {
+    "meta_title": "Terms of Service",
+    "meta_description": "Read our terms and conditions for using 4Shifter."
   }
 }

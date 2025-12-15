@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { UserProfile } from '@clerk/nextjs';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getCurrentUser } from '@/actions/UserActions';
+
+import { ProfileForm } from '@/components/Profile/ProfileForm';
 import { getI18nPath } from '@/utils/Helpers';
 
 type IUserProfilePageProps = {
@@ -23,11 +26,19 @@ export default async function UserProfilePage(props: IUserProfilePageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
+  const user = await getCurrentUser();
+
   return (
-    <div className="my-6 -ml-16">
-      <UserProfile
-        path={getI18nPath('/home/user-profile', locale)}
-      />
+    <div className="my-6">
+      <div className="mb-8">
+        <ProfileForm user={user} />
+      </div>
+
+      <div className="-ml-16">
+        <UserProfile
+          path={getI18nPath('/home/user-profile', locale)}
+        />
+      </div>
     </div>
   );
 };

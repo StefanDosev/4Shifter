@@ -6,6 +6,23 @@ import { NextResponse } from 'next/server';
 import arcjet from '@/libs/Arcjet';
 import { routing } from './libs/I18nRouting';
 
+// Security headers to add to all responses
+const securityHeaders = {
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-XSS-Protection': '1; mode=block',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
+// Helper to add security headers to a response
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  Object.entries(securityHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
+}
+
 const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = createRouteMatcher([
@@ -48,7 +65,7 @@ export default async function proxy(
     const decision = await aj.protect(request);
 
     if (decision.isDenied()) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return addSecurityHeaders(NextResponse.json({ error: 'Forbidden' }, { status: 403 }));
     }
   }
 
@@ -56,9 +73,9 @@ export default async function proxy(
   if (
     isAuthPage(request) || isProtectedRoute(request)
   ) {
-    return clerkMiddleware(async (auth, req) => {
+    const response = await clerkMiddleware(async (auth, req) => {
       if (isProtectedRoute(req)) {
-        const locale = req.nextUrl.pathname.match(/(\/.*)\/home/)?.at(1) ?? '';
+        const locale = req.nextUrl.pathname.match(/(\/.*)?\/home/)?.at(1) ?? '';
 
         const signInUrl = new URL(`${locale}/sign-in`, req.url);
 
@@ -69,9 +86,12 @@ export default async function proxy(
 
       return handleI18nRouting(req);
     })(request, event);
+
+    return addSecurityHeaders(response as NextResponse);
   }
 
-  return handleI18nRouting(request);
+  const response = handleI18nRouting(request);
+  return addSecurityHeaders(response as NextResponse);
 }
 
 export const config = {
