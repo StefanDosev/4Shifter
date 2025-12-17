@@ -22,42 +22,33 @@ function verifyMonth(monthIndex: number, patterns: Record<string, string>, month
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(2025, monthIndex, day);
 
-    // Check each shift type
-    for (const [_shiftType, patternString] of Object.entries(patterns)) {
-      const _expectedGroup = patternString[day - 1];
+    // Let's check all groups for this day
+    for (const group of ['A', 'B', 'C', 'D'] as const) {
+      const result = calculateShift(date, group);
 
-      // Calculate shift for this group
-      // We need to reverse check: if pattern says Group A is on Shift I,
-      // then calculateShift(date, 'A') should return 'I'
-
-      // Let's check all groups for this day
-      for (const group of ['A', 'B', 'C', 'D'] as const) {
-        const result = calculateShift(date, group);
-
-        // Find what shift this group SHOULD be on according to pattern
-        let expectedShift = 'REST';
-        for (const [s, p] of Object.entries(patterns)) {
-          if (p[day - 1]?.toLowerCase() === group.toLowerCase()) {
-            expectedShift = s;
-            break;
-          }
+      // Find what shift this group SHOULD be on according to pattern
+      let expectedShift = 'REST';
+      for (const [s, p] of Object.entries(patterns)) {
+        if (p[day - 1]?.toLowerCase() === group.toLowerCase()) {
+          expectedShift = s;
+          break;
         }
+      }
 
-        // Special case: if multiple shifts claim the same group (error in pattern), or none do (rest)
-        // The calculateShift logic defaults to REST if not found in I, II, III
+      // Special case: if multiple shifts claim the same group (error in pattern), or none do (rest)
+      // The calculateShift logic defaults to REST if not found in I, II, III
 
-        if (result.shiftType !== expectedShift) {
-          // If expected is REST and result is REST, it's fine.
-          // But our pattern has explicit REST string.
-          // Let's trust the calculateShift logic which iterates I, II, III, REST
-          // If the group is in REST pattern, it returns REST.
+      if (result.shiftType !== expectedShift) {
+        // If expected is REST and result is REST, it's fine.
+        // But our pattern has explicit REST string.
+        // Let's trust the calculateShift logic which iterates I, II, III, REST
+        // If the group is in REST pattern, it returns REST.
 
-          // Wait, calculateShift iterates the map. If it finds it in REST, it returns REST.
-          // So it should match.
+        // Wait, calculateShift iterates the map. If it finds it in REST, it returns REST.
+        // So it should match.
 
-          console.error(`Mismatch on ${monthName} ${day}, Group ${group}: Expected ${expectedShift}, Got ${result.shiftType}`);
-          errors++;
-        }
+        console.error(`Mismatch on ${monthName} ${day}, Group ${group}: Expected ${expectedShift}, Got ${result.shiftType}`);
+        errors++;
       }
     }
   }
