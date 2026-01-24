@@ -31,10 +31,13 @@ export async function register() {
       Sentry.init(sentryOptions);
     }
 
+    // Disable Sentry for Edge runtime to stay under 1MB limit
+    /*
     if (process.env.NEXT_RUNTIME === 'edge') {
       // Edge Sentry configuration
       Sentry.init(sentryOptions);
     }
+    */
   }
 }
 
