@@ -11,11 +11,19 @@ export type Holiday = {
   month: number; // 1-12
   day: number; // 1-31
   isMovable?: boolean; // For holidays like Easter that change dates
+  isWorkingHoliday?: boolean; // Delo na praznik - working holiday for shift workers
+  year?: number; // For movable holidays, specify the year
 };
 
 /**
  * Fixed Slovenian Public Holidays
  * Source: https://www.gov.si/teme/prazniki-in-dela-prosti-dnevi/
+ *
+ * Working holidays (delo na praznik) for 2026:
+ * - February 8 (Prešeren Day)
+ * - April 27 (Day of Uprising)
+ * - May 2 (Labour Day 2nd)
+ * - May 24 (Whit Sunday)
  */
 export const SLOVENIAN_HOLIDAYS: Holiday[] = [
   {
@@ -38,6 +46,33 @@ export const SLOVENIAN_HOLIDAYS: Holiday[] = [
     nameSl: 'Prešernov dan',
     month: 2,
     day: 8,
+    isWorkingHoliday: true, // Delo na praznik
+  },
+  {
+    name: 'easter_sunday',
+    nameEn: 'Easter Sunday',
+    nameSl: 'Velika noč',
+    month: 4,
+    day: 5,
+    isMovable: true,
+    year: 2026,
+  },
+  {
+    name: 'easter_monday',
+    nameEn: 'Easter Monday',
+    nameSl: 'Velikonočni ponedeljek',
+    month: 4,
+    day: 6,
+    isMovable: true,
+    year: 2026,
+  },
+  {
+    name: 'uprising_day',
+    nameEn: 'Day of Uprising Against Occupation',
+    nameSl: 'Dan upora proti okupatorju',
+    month: 4,
+    day: 27,
+    isWorkingHoliday: true, // Delo na praznik
   },
   {
     name: 'labor_day',
@@ -52,6 +87,17 @@ export const SLOVENIAN_HOLIDAYS: Holiday[] = [
     nameSl: 'Praznik dela',
     month: 5,
     day: 2,
+    isWorkingHoliday: true, // Delo na praznik
+  },
+  {
+    name: 'whit_sunday',
+    nameEn: 'Whit Sunday (Pentecost)',
+    nameSl: 'Binkošti',
+    month: 5,
+    day: 24,
+    isMovable: true,
+    year: 2026,
+    isWorkingHoliday: true, // Delo na praznik
   },
   {
     name: 'statehood_day',
@@ -107,23 +153,59 @@ export const FLEX_TIME_DAYS_PER_YEAR = 10; // Default buffer
  * Check if a given date is a Slovenian public holiday
  */
 export function isHoliday(date: Date): boolean {
+  const year = date.getFullYear();
   const month = date.getMonth() + 1; // getMonth() returns 0-11
   const day = date.getDate();
 
   return SLOVENIAN_HOLIDAYS.some(
-    holiday => holiday.month === month && holiday.day === day,
+    (holiday) => {
+      // For movable holidays, check the year matches
+      if (holiday.isMovable && holiday.year && holiday.year !== year) {
+        return false;
+      }
+      return holiday.month === month && holiday.day === day;
+    },
   );
+}
+
+/**
+ * Check if a given date is a working holiday (delo na praznik)
+ * These are holidays where shift workers still work
+ */
+export function isWorkingHoliday(date: Date): boolean {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  const holiday = SLOVENIAN_HOLIDAYS.find(
+    (h) => {
+      // For movable holidays, check the year matches
+      if (h.isMovable && h.year && h.year !== year) {
+        return false;
+      }
+      return h.month === month && h.day === day;
+    },
+  );
+
+  return holiday?.isWorkingHoliday ?? false;
 }
 
 /**
  * Get the holiday name for a given date (returns null if not a holiday)
  */
 export function getHolidayName(date: Date, locale: 'en' | 'sl' = 'en'): string | null {
+  const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
   const holiday = SLOVENIAN_HOLIDAYS.find(
-    h => h.month === month && h.day === day,
+    (h) => {
+      // For movable holidays, check the year matches
+      if (h.isMovable && h.year && h.year !== year) {
+        return false;
+      }
+      return h.month === month && h.day === day;
+    },
   );
 
   if (!holiday) {
@@ -136,12 +218,19 @@ export function getHolidayName(date: Date, locale: 'en' | 'sl' = 'en'): string |
 /**
  * Get all holidays for a given month
  */
-export function getHolidaysForMonth(month: number, year: number): Array<{ date: Date; name: string; nameSl: string }> {
+export function getHolidaysForMonth(month: number, year: number): Array<{ date: Date; name: string; nameSl: string; isWorkingHoliday: boolean }> {
   return SLOVENIAN_HOLIDAYS
-    .filter(h => h.month === month)
+    .filter((h) => {
+      // For movable holidays, only include if year matches
+      if (h.isMovable && h.year && h.year !== year) {
+        return false;
+      }
+      return h.month === month;
+    })
     .map(h => ({
       date: new Date(year, month - 1, h.day),
       name: h.nameEn,
       nameSl: h.nameSl,
+      isWorkingHoliday: h.isWorkingHoliday ?? false,
     }));
 }

@@ -20,6 +20,7 @@ export type ScheduleItem = {
   isSickLeave?: boolean;
   isFlexTime?: boolean;
   isHoliday?: boolean;
+  isWorkingHoliday?: boolean;
   holidayName?: string | null;
   nadure?: number;
   ure?: number;
@@ -30,15 +31,16 @@ export type ScheduleItem = {
 type CalendarGridProps = {
   currentDate: Date;
   schedule: ScheduleItem[];
-  onDayClick?: (date: Date) => void;
+  onDayClickAction?: (date: Date) => void;
 };
 
-export function CalendarGrid({ currentDate, schedule, onDayClick }: CalendarGridProps) {
+export function CalendarGrid({ currentDate, schedule, onDayClickAction }: CalendarGridProps) {
   // Calculate the days to display
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart);
-  const endDate = endOfWeek(monthEnd);
+  // Use Monday as the first day of week (European calendar)
+  const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
   const days = eachDayOfInterval({
     start: startDate,
@@ -82,13 +84,14 @@ export function CalendarGrid({ currentDate, schedule, onDayClick }: CalendarGrid
               isSickLeave={scheduleItem?.isSickLeave || false}
               isFlexTime={scheduleItem?.isFlexTime || false}
               isHoliday={scheduleItem?.isHoliday || false}
+              isWorkingHoliday={scheduleItem?.isWorkingHoliday || false}
               holidayName={scheduleItem?.holidayName}
               nadure={scheduleItem?.nadure || 0}
               ure={scheduleItem?.ure || 0}
               workedShiftType={scheduleItem?.workedShiftType} // Added workedShiftType
               isOverride={scheduleItem?.isOverride || false}
               isCurrentMonth={isCurrentMonth}
-              onClickAction={() => onDayClick?.(day)}
+              onClickAction={() => onDayClickAction?.(day)}
             />
           );
         })}

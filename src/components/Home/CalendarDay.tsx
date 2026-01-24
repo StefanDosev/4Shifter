@@ -12,6 +12,7 @@ type CalendarDayProps = {
   isSickLeave?: boolean;
   isFlexTime?: boolean;
   isHoliday?: boolean;
+  isWorkingHoliday?: boolean;
   holidayName?: string | null;
   nadure?: number;
   ure?: number;
@@ -33,6 +34,7 @@ export function CalendarDay({
   isSickLeave = false,
   isFlexTime = false,
   isHoliday = false,
+  isWorkingHoliday = false,
   holidayName,
   nadure = 0,
   ure = 0,
@@ -47,6 +49,19 @@ export function CalendarDay({
 
   // Determine background color - priority: sick > vacation > overtime > shift
   let bgClass: string = SHIFT_COLORS[shiftType] || SHIFT_COLORS.REST;
+  let useGradient = false;
+  let gradientStyle: React.CSSProperties = {};
+
+  // Get the shift color for potential gradient use
+  const shiftColorClass = SHIFT_COLORS[shiftType] || SHIFT_COLORS.REST;
+  // Map Tailwind classes to actual colors for gradient
+  const shiftColorMap: Record<string, string> = {
+    'bg-[#ffc900]': '#ffc900',
+    'bg-[#23a094]': '#23a094',
+    'bg-[#b597f6]': '#b597f6',
+    'bg-white': '#ffffff',
+  };
+  const shiftHexColor = shiftColorMap[shiftColorClass] || '#ffffff';
 
   if (nadure > 0 || ure > 0) {
     // If there's overtime, use a highlighted background
@@ -65,7 +80,15 @@ export function CalendarDay({
     bgClass = SICK_COLOR;
   }
 
-  if (isHoliday) {
+  // Working holiday: split color (half pink/holiday, half shift color)
+  if (isWorkingHoliday && isHoliday) {
+    useGradient = true;
+    gradientStyle = {
+      background: `linear-gradient(135deg, #fbcfe8 50%, ${shiftHexColor} 50%)`,
+    };
+    bgClass = ''; // Clear tailwind bg class, use inline style
+  } else if (isHoliday) {
+    // Non-working holiday: full holiday color
     bgClass = HOLIDAY_COLOR;
   }
 
@@ -81,6 +104,7 @@ export function CalendarDay({
         ${bgClass} ${opacityClass}
         ${isToday ? 'ring-4 ring-black ring-offset-2' : ''}
       `}
+      style={useGradient ? gradientStyle : undefined}
     >
       <div className="flex w-full items-start justify-between">
         <span className={`text-sm font-bold ${shiftType === 'REST' ? 'text-gray-400' : 'text-black'}`}>
@@ -121,11 +145,11 @@ export function CalendarDay({
         {isFlexTime && <span className="mx-auto text-[10px] font-bold">FLEX</span>}
         {isHoliday && (
           <div className="flex flex-col items-center">
-            <span className="text-[10px] font-bold">HOL</span>
+            <span className="text-[10px] font-bold">{isWorkingHoliday ? 'WORK' : 'HOL'}</span>
             {holidayName && (
               <span className="text-center text-[8px] leading-tight">
                 {holidayName.substring(0, 8)}
-                ...
+                {holidayName.length > 8 ? '...' : ''}
               </span>
             )}
           </div>

@@ -35,6 +35,30 @@ const MONTHLY_SHIFTS: Record<number, { I: string; II: string; III: string; REST:
     III: 'bbbbcccccdddddaaaaabbbbbcccccdd',
     REST: 'addcbbaadccbbaddccbaaddcbbaadcc',
   },
+  1: { // February (28 days in 2026)
+    I: 'aabbbbbcccccdddddaaaaabbbbbc',
+    II: 'cccccdddddaaaaabbbbbcccccddd',
+    III: 'dddaaaaabbbbbcccccdddddaaaaa',
+    REST: 'bbaddccbaaddcbbaadccbbaddccb',
+  },
+  2: { // March
+    I: 'ccccdddddaaaaabbbbbcccccdddddaa',
+    II: 'ddaaaaabbbbbcccccdddddaaaaabbbb',
+    III: 'bbbbbcccccdddddaaaaabbbbbcccccd',
+    REST: 'aaddcbbaadccbbaddccbaaddcbbaadc',
+  },
+  3: { // April (30 days)
+    I: 'aaaabbbbcccccdddddaaaaabbbbbcc',
+    II: 'bcccccdddddaaaaabbbbbcccccdddd',
+    III: 'ddddaaaaabbbbbcccccdddddaaaaab',
+    REST: 'cbbbddccbaaddcbbaadccbbaddccba',
+  },
+  4: { // May
+    I: 'cccdddddaaaaabbbbbcccccdddddaaa',
+    II: 'daaaaabbbbbcccccdddddaaaaabbbbb',
+    III: 'bbbbcccccdddddaaaaabbbbbcccccdd',
+    REST: 'addcbbaadccbbaddccbaaddcbbaadcc',
+  },
 };
 
 /**

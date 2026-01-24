@@ -5,7 +5,7 @@ import { useLocale } from 'next-intl';
 import { useState } from 'react';
 import { getMonthlyTotals, updateDailyStats } from '@/actions/DailyStatsActions';
 import { getMonthlySchedule } from '@/actions/ShiftActions';
-import { getHolidayName, isHoliday } from '@/utils/HolidayConfig';
+import { getHolidayName, isHoliday, isWorkingHoliday } from '@/utils/HolidayConfig';
 import { CalendarGrid } from './CalendarGrid';
 
 import { CalendarHeader } from './CalendarHeader';
@@ -43,6 +43,7 @@ export function CalendarView({
     isVacation: d.isVacation || false,
     isFlexTime: d.isFlexTime || false,
     isHoliday: d.isHoliday || isHoliday(new Date(d.date)),
+    isWorkingHoliday: d.isWorkingHoliday || isWorkingHoliday(new Date(d.date)),
     holidayName: d.isHoliday || isHoliday(new Date(d.date)) ? getHolidayName(new Date(d.date), locale as any) : null,
     isOverride: d.isOverride,
     nadure: d.nadure || 0,
@@ -104,6 +105,7 @@ export function CalendarView({
       isVacation: item?.isVacation || false,
       isFlexTime: (item as any)?.isFlexTime || false,
       isHoliday: (item as any)?.isHoliday || isHoliday(new Date(dateStr)),
+      isWorkingHoliday: (item as any)?.isWorkingHoliday || isWorkingHoliday(new Date(dateStr)),
       isSickLeave: (item as any)?.isSickLeave || false,
       workedShiftType: (item as any)?.workedShiftType,
     };
@@ -121,7 +123,7 @@ export function CalendarView({
         <CalendarGrid
           currentDate={currentDate}
           schedule={mappedSchedule}
-          onDayClick={handleDayClick}
+          onDayClickAction={handleDayClick}
         />
       </div>
 
@@ -173,6 +175,13 @@ export function CalendarView({
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-pink-200" />
             <span>Holiday</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className="h-4 w-4 rounded-full border-2 border-black"
+              style={{ background: 'linear-gradient(135deg, #fbcfe8 50%, #ffc900 50%)' }}
+            />
+            <span>Working Holiday</span>
           </div>
         </div>
       </div>
