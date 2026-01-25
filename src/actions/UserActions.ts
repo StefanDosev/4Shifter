@@ -16,25 +16,47 @@ export async function getCurrentUser() {
   }
 
   try {
-    // 1. Try to find existing user
+    // 1. Try to find existing user by Clerk ID first (most efficient)
     let [user] = await db.select().from(users).where(eq(users.clerkId, clerkId));
 
     if (user) {
       return user;
     }
 
-    // 2. User doesn't exist, fetch from Clerk
+    // 2. User not found by Clerk ID, fetch from Clerk to get email
     const clerkUser = await currentUser();
 
     if (!clerkUser) {
       throw new Error('Could not fetch user from Clerk');
     }
 
-    const email = clerkUser.emailAddresses[0]?.emailAddress ?? 'unknown@example.com';
+    const email = clerkUser.emailAddresses[0]?.emailAddress;
+    if (!email) {
+      throw new Error('User does not have an email address in Clerk');
+    }
+
+    // 3. Try to find by email to handle "re-linking" or collisions
+    [user] = await db.select().from(users).where(eq(users.email, email));
+
+    if (user) {
+      // LINKING: If we found a user by email but with a different Clerk ID, update it
+      // This is crucial to break onboarding loops where DB has old ID
+      if (user.clerkId !== clerkId) {
+        console.warn(`Linking existing email ${email} to new Clerk ID ${clerkId}`);
+        const [updatedUser] = await db
+          .update(users)
+          .set({ clerkId, updatedAt: new Date() })
+          .where(eq(users.id, user.id))
+          .returning();
+        return updatedUser!;
+      }
+      return user;
+    }
+
     const firstName = clerkUser.firstName ?? undefined;
     const lastName = clerkUser.lastName ?? undefined;
 
-    // 3. Try to create new user
+    // 4. Truly new user, create record
     try {
       [user] = await db.insert(users).values({
         clerkId,
@@ -44,9 +66,8 @@ export async function getCurrentUser() {
         shiftGroup: 'A', // Temporary default
       }).returning();
     } catch (insertError: any) {
-      // If insertion fails (likely unique constraint conflict), try to find by ID or Email
-      console.warn('User insertion failed, attempting recovery:', insertError.code || insertError.message);
-
+      // Final fallback search if insert still fails (race condition)
+      console.warn('Final recovery attempt after insert failure:', insertError.message);
       [user] = await db
         .select()
         .from(users)
@@ -58,27 +79,11 @@ export async function getCurrentUser() {
         );
 
       if (!user) {
-        // Log the full error if recovery also fails
-        console.error('CRITICAL: User creation and recovery failed.', {
-          insertError: {
-            code: insertError.code,
-            detail: insertError.detail,
-            message: insertError.message,
-            table: insertError.table,
-            constraint: insertError.constraint,
-          },
-          clerkId,
-          email,
-        });
         throw insertError;
       }
     }
 
-    if (!user) {
-      throw new Error('Failed to create or retrieve user');
-    }
-
-    return user;
+    return user!;
   } catch (error) {
     console.error('Error in getCurrentUser:', error);
     throw error;
