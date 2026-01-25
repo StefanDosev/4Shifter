@@ -8,7 +8,7 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   firstName: text('first_name'),
   lastName: text('last_name'),
-  shiftGroup: shiftGroupEnum('shift_group').notNull(),
+  shiftGroup: text('shift_group').$type<'A' | 'B' | 'C' | 'D'>().notNull(),
   vacationDaysBalance: integer('vacation_days_balance').default(0).notNull(),
   flexDaysBalance: integer('flex_days_balance').default(0).notNull(),
   vacationDaysUsed: integer('vacation_days_used').default(0).notNull(),

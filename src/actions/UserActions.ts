@@ -1,7 +1,7 @@
 'use server';
 
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import { db } from '@/libs/DB';
 import { users } from '@/models/Users';
 
@@ -44,11 +44,32 @@ export async function getCurrentUser() {
         shiftGroup: 'A', // Temporary default
       }).returning();
     } catch (insertError: any) {
-      // If insertion fails due to a unique constraint, it means another request just created the user
-      if (insertError.code === '23505') {
-        [user] = await db.select().from(users).where(eq(users.clerkId, clerkId));
-      } else {
-        console.error('Database error during user insertion:', insertError);
+      // If insertion fails (likely unique constraint conflict), try to find by ID or Email
+      console.warn('User insertion failed, attempting recovery:', insertError.code || insertError.message);
+
+      [user] = await db
+        .select()
+        .from(users)
+        .where(
+          or(
+            eq(users.clerkId, clerkId),
+            eq(users.email, email),
+          ),
+        );
+
+      if (!user) {
+        // Log the full error if recovery also fails
+        console.error('CRITICAL: User creation and recovery failed.', {
+          insertError: {
+            code: insertError.code,
+            detail: insertError.detail,
+            message: insertError.message,
+            table: insertError.table,
+            constraint: insertError.constraint,
+          },
+          clerkId,
+          email,
+        });
         throw insertError;
       }
     }
