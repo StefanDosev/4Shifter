@@ -15,34 +15,53 @@ export async function getCurrentUser() {
     throw new Error('Unauthorized');
   }
 
-  // Try to find existing user
-  const [existingUser] = await db.select().from(users).where(eq(users.clerkId, clerkId));
+  try {
+    // 1. Try to find existing user
+    let [user] = await db.select().from(users).where(eq(users.clerkId, clerkId));
 
-  if (existingUser) {
-    return existingUser;
+    if (user) {
+      return user;
+    }
+
+    // 2. User doesn't exist, fetch from Clerk
+    const clerkUser = await currentUser();
+
+    if (!clerkUser) {
+      throw new Error('Could not fetch user from Clerk');
+    }
+
+    const email = clerkUser.emailAddresses[0]?.emailAddress ?? 'unknown@example.com';
+    const firstName = clerkUser.firstName ?? undefined;
+    const lastName = clerkUser.lastName ?? undefined;
+
+    // 3. Try to create new user
+    try {
+      [user] = await db.insert(users).values({
+        clerkId,
+        email,
+        firstName,
+        lastName,
+        shiftGroup: 'A', // Temporary default
+      }).returning();
+    } catch (insertError: any) {
+      // If insertion fails due to a unique constraint, it means another request just created the user
+      if (insertError.code === '23505') {
+        [user] = await db.select().from(users).where(eq(users.clerkId, clerkId));
+      } else {
+        console.error('Database error during user insertion:', insertError);
+        throw insertError;
+      }
+    }
+
+    if (!user) {
+      throw new Error('Failed to create or retrieve user');
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Error in getCurrentUser:', error);
+    throw error;
   }
-
-  // User doesn't exist, create them
-  const clerkUser = await currentUser();
-
-  if (!clerkUser) {
-    throw new Error('Could not fetch user from Clerk');
-  }
-
-  const email = clerkUser.emailAddresses[0]?.emailAddress ?? 'unknown@example.com';
-  const firstName = clerkUser.firstName ?? undefined;
-  const lastName = clerkUser.lastName ?? undefined;
-
-  // Create new user with temporary shift group - they'll update it in onboarding
-  const [newUser] = await db.insert(users).values({
-    clerkId,
-    email,
-    firstName,
-    lastName,
-    shiftGroup: 'A', // Temporary default
-  }).returning();
-
-  return newUser!;
 }
 
 /**

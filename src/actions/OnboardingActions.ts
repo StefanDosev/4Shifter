@@ -21,22 +21,30 @@ export async function completeOnboarding({
   vacationDaysBalance: number;
   flexDaysBalance: number;
 }) {
-  // This will create the user if they don't exist
-  const user = await getCurrentUser();
+  try {
+    // This will create the user if they don't exist
+    const user = await getCurrentUser();
 
-  // Update their shift group
-  await db
-    .update(users)
-    .set({
-      firstName,
-      lastName,
-      shiftGroup,
-      vacationDaysBalance,
-      flexDaysBalance,
-      vacationDaysUsed: 0,
-      flexTimeDaysUsed: 0,
-    })
-    .where(eq(users.id, user.id));
+    // Update their shift group
+    await db
+      .update(users)
+      .set({
+        firstName,
+        lastName,
+        shiftGroup,
+        vacationDaysBalance,
+        flexDaysBalance,
+        vacationDaysUsed: 0,
+        flexTimeDaysUsed: 0,
+      })
+      .where(eq(users.id, user.id));
 
-  return { success: true };
+    return { success: true };
+  } catch (error: any) {
+    console.error('Onboarding action error:', error);
+    return {
+      success: false,
+      error: error.message || 'An unexpected error occurred during onboarding.',
+    };
+  }
 }

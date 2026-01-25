@@ -8,7 +8,7 @@ import * as schema from '@/models/Users';
 export const createDbConnection = () => {
   const pool = new Pool({
     connectionString: Env.DATABASE_URL,
-    max: 1,
+    max: 10,
   });
 
   return drizzle({

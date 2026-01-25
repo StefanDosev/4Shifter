@@ -22,6 +22,7 @@ export function OnboardingForm() {
     flexDaysBalance: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleNext = () => setStep(s => s + 1);
   const handleBack = () => setStep(s => s - 1);
@@ -32,17 +33,26 @@ export function OnboardingForm() {
     }
 
     setIsSubmitting(true);
+    setError(null);
     try {
-      await completeOnboarding({
+      const result = await completeOnboarding({
         firstName: formData.firstName,
         lastName: formData.lastName,
         shiftGroup: formData.shiftGroup,
         vacationDaysBalance: formData.vacationDaysBalance,
         flexDaysBalance: formData.flexDaysBalance,
       });
+
+      if (!result.success) {
+        setError(result.error || 'Failed to save onboarding data');
+        setIsSubmitting(false);
+        return;
+      }
+
       window.location.href = '/home';
     } catch (error) {
       console.error(error);
+      setError('A system error occurred. Please try again.');
       setIsSubmitting(false);
     }
   };
@@ -68,6 +78,12 @@ export function OnboardingForm() {
         ))}
       </div>
 
+      {error && (
+        <div className="mb-6 rounded-lg border-2 border-red-500 bg-red-50 p-4 text-center text-sm font-bold text-red-600">
+          {error}
+        </div>
+      )}
+
       <div className="rounded-xl border-2 border-black bg-white p-8 shadow-neo">
         {step === 1 && (
           <div className="space-y-6">
@@ -77,8 +93,9 @@ export function OnboardingForm() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-bold">First Name</label>
+                <label htmlFor="firstName" className="mb-2 block text-sm font-bold">First Name</label>
                 <input
+                  id="firstName"
                   type="text"
                   value={formData.firstName}
                   onChange={e => setFormData({ ...formData, firstName: e.target.value })}
@@ -87,8 +104,9 @@ export function OnboardingForm() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-bold">Last Name</label>
+                <label htmlFor="lastName" className="mb-2 block text-sm font-bold">Last Name</label>
                 <input
+                  id="lastName"
                   type="text"
                   value={formData.lastName}
                   onChange={e => setFormData({ ...formData, lastName: e.target.value })}
@@ -121,7 +139,7 @@ export function OnboardingForm() {
                   onClick={() => setFormData({ ...formData, shiftGroup: group.id })}
                   className={`rounded-xl border-2 p-4 text-left transition-all hover:-translate-y-1 hover:shadow-neo ${
                     formData.shiftGroup === group.id
-                      ? 'bg-neo-green border-black shadow-neo'
+                      ? 'border-black bg-neo-cyan shadow-neo'
                       : 'border-black bg-white hover:bg-gray-50'
                   }`}
                 >
@@ -153,8 +171,9 @@ export function OnboardingForm() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-bold">Vacation Balance (Days)</label>
+                <label htmlFor="vacationBalance" className="mb-2 block text-sm font-bold">Vacation Balance (Days)</label>
                 <input
+                  id="vacationBalance"
                   type="number"
                   value={formData.vacationDaysBalance}
                   onChange={e => setFormData({ ...formData, vacationDaysBalance: Number(e.target.value) })}
@@ -163,8 +182,9 @@ export function OnboardingForm() {
                 <p className="mt-1 text-xs font-bold text-gray-500">Days remaining right now.</p>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-bold">Flex Time Balance (Days)</label>
+                <label htmlFor="flexBalance" className="mb-2 block text-sm font-bold">Flex Time Balance (Days)</label>
                 <input
+                  id="flexBalance"
                   type="number"
                   value={formData.flexDaysBalance}
                   onChange={e => setFormData({ ...formData, flexDaysBalance: Number(e.target.value) })}
