@@ -2,7 +2,8 @@
 
 import type { ShiftGroup } from '@/types';
 import { format } from 'date-fns';
-import { ArrowRight, Calendar, Clock, Coins, Shield, Users } from 'lucide-react';
+import { sl } from 'date-fns/locale';
+import { ArrowRight, Calendar, CheckCircle, Clock, Coins, Heart, Shield, Umbrella } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { LoadingScreen } from '@/components/LoadingScreen';
@@ -18,15 +19,20 @@ export default function LandingPage() {
 
   // Trigger animations on mount
   useEffect(() => {
-    setMounted(true);
+    // Defer to next tick to avoid synchronous state update warning
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleEnterApp = () => {
+  const handleSignUp = () => {
     setIsLoading(true);
-    // Simulate loading delay for effect, then navigate
     setTimeout(() => {
-      router.push('/home');
-    }, 1500);
+      router.push('/sign-up');
+    }, 800);
+  };
+
+  const handleSignIn = () => {
+    router.push('/sign-in');
   };
 
   if (isLoading) {
@@ -45,19 +51,21 @@ export default function LandingPage() {
           rightNav={(
             <>
               <button
+                type="button"
                 onClick={() => router.push('/about')}
                 className="mr-4 hidden font-bold decoration-2 underline-offset-4 hover:underline sm:block"
               >
-                About
+                O nas
               </button>
               <button
-                onClick={() => router.push('/sign-in')}
+                type="button"
+                onClick={handleSignIn}
                 className="mr-4 hidden font-bold decoration-2 underline-offset-4 hover:underline sm:block"
               >
-                Log In
+                Prijava
               </button>
-              <Button onClick={() => router.push('/sign-up')} size="sm" className="hidden sm:flex">
-                Sign Up
+              <Button onClick={handleSignUp} size="sm" className="hidden sm:flex">
+                Registracija
               </Button>
             </>
           )}
@@ -73,24 +81,29 @@ export default function LandingPage() {
             {/* Left: Copy */}
             <div className="space-y-6 text-center md:text-left">
               <div className="inline-block -rotate-2 transform animate-float rounded-full border-2 border-black bg-white px-4 py-1 text-sm font-bold shadow-neo-sm">
-                👋 Team Portal & Family Sync
+                ✓ Brezplačno • Brez oglasov • Brez prodaje podatkov
               </div>
-              <h1 className="text-5xl leading-[1.0] font-black tracking-tight md:text-7xl">
-                Stay in Sync
-                {' '}
+              <h1 className="text-4xl leading-[1.1] font-black tracking-tight md:text-6xl">
+                Tvoj urnik izmen.
                 <br />
-                <span className="text-white text-shadow-black" style={{ textShadow: '4px 4px 0 #1a1a1a' }}>Without The Chaos.</span>
+                <span className="text-white" style={{ textShadow: '4px 4px 0 #1a1a1a' }}>Vedno pri roki.</span>
               </h1>
               <p className="mx-auto max-w-lg text-xl leading-relaxed font-medium opacity-90 md:mx-0">
-                A simple, private tool to check the roster, track overtime, and plan family time around the 4-shift cycle.
+                Preveri izmeno, sledi nadurom in načrtuj dopust – brez glavobolov.
               </p>
               <div className="flex flex-col justify-center gap-4 pt-4 sm:flex-row md:justify-start">
-                <Button onClick={handleEnterApp} size="lg" className="w-full transform shadow-neo transition-all hover:-translate-y-1 hover:shadow-neo-hover sm:w-auto">
-                  Open My Calendar
+                <Button onClick={handleSignUp} size="lg" className="w-full transform shadow-neo transition-all hover:-translate-y-1 hover:shadow-neo-hover sm:w-auto">
+                  Ustvari račun
                   {' '}
                   <ArrowRight size={20} />
                 </Button>
+                <Button onClick={handleSignIn} variant="secondary" size="lg" className="w-full sm:w-auto">
+                  Prijava
+                </Button>
               </div>
+              <p className="text-sm font-medium text-gray-700">
+                Registracija traja manj kot minuto.
+              </p>
             </div>
 
             {/* Right: Live Roster Widget */}
@@ -100,10 +113,10 @@ export default function LandingPage() {
                 <div className="mb-6 flex items-center justify-between border-b-2 border-gray-100 pb-4">
                   <div className="flex items-center gap-2">
                     <Clock className="text-neo-cyan" />
-                    <h2 className="text-xl font-black">Who is working today?</h2>
+                    <h2 className="text-xl font-black">Kdo danes dela?</h2>
                   </div>
                   <span className="rounded bg-black px-2 py-1 text-sm font-bold text-white">
-                    {format(today, 'EEE, d MMM')}
+                    {format(today, 'EEE, d MMM', { locale: sl })}
                   </span>
                 </div>
 
@@ -119,12 +132,13 @@ export default function LandingPage() {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-xs font-bold text-gray-400 uppercase">
-                            Group
+                            Skupina
+                            {' '}
                             {group}
                           </span>
                           <div className="flex items-center gap-2">
                             <span className={`h-3 w-3 rounded-full border border-black ${shiftDef.color}`}></span>
-                            <span className="font-bold">{shiftDef.labelEn}</span>
+                            <span className="font-bold">{shiftDef.labelSl}</span>
                           </div>
                         </div>
                       </div>
@@ -134,7 +148,7 @@ export default function LandingPage() {
 
                 <div className="mt-6 border-t-2 border-gray-100 pt-4 text-center">
                   <p className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                    Live Status
+                    Živo stanje
                   </p>
                 </div>
               </div>
@@ -152,42 +166,110 @@ export default function LandingPage() {
       {/* Feature Grid */}
       <section className="mx-auto max-w-6xl px-4 py-24">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-black">Built for our schedule</h2>
-          <p className="text-xl text-gray-600">Everything you need, nothing you don't.</p>
+          <h2 className="mb-4 text-4xl font-black">Narejeno za naš urnik</h2>
+          <p className="text-xl text-gray-600">Vse kar rabiš. Nič več.</p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {/* Card 1 */}
+          {/* Card 1: Koledar izmen */}
           <div className="group rounded-2xl border-2 border-black bg-white p-8 shadow-neo transition-all duration-300 hover:-translate-y-2">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-neo-cyan transition-transform group-hover:rotate-6">
-              <Users size={32} />
+              <Calendar size={32} />
             </div>
-            <h3 className="mb-3 text-2xl font-black">Family Access</h3>
+            <h3 className="mb-3 text-2xl font-black">Koledar izmen</h3>
             <p className="leading-relaxed font-medium text-gray-600">
-              Mom can check if you're working night shift without asking. Just share the link.
+              Vedno veš, kdaj delaš in kdo je na izmeni s teboj.
             </p>
           </div>
 
-          {/* Card 2 */}
+          {/* Card 2: Nadure */}
           <div className="group rounded-2xl border-2 border-black bg-white p-8 shadow-neo transition-all duration-300 hover:-translate-y-2">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-neo-pink transition-transform group-hover:-rotate-6">
               <Coins size={32} />
             </div>
-            <h3 className="mb-3 text-2xl font-black">Track "Nadure"</h3>
+            <h3 className="mb-3 text-2xl font-black">Nadure na enem mestu</h3>
             <p className="leading-relaxed font-medium text-gray-600">
-              Keep a personal log of extra hours and banked time. Don't rely on memory alone.
+              Beleži si nadure. Izberi: plačilo ali prosti dnevi.
             </p>
           </div>
 
-          {/* Card 3 */}
+          {/* Card 3: Dopust in flex */}
           <div className="group rounded-2xl border-2 border-black bg-white p-8 shadow-neo transition-all duration-300 hover:-translate-y-2">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-neo-violet transition-transform group-hover:rotate-12">
-              <Shield size={32} />
+              <Umbrella size={32} />
             </div>
-            <h3 className="mb-3 text-2xl font-black">Private & Local</h3>
+            <h3 className="mb-3 text-2xl font-black">Dopust in flex</h3>
             <p className="leading-relaxed font-medium text-gray-600">
-              Data stays on your browser. No login required for basic checking.
+              Načrtuj dopust in prosti dneve brez papirjev.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Why 4Shifter Section */}
+      <section className="border-y-2 border-black bg-gray-50">
+        <div className="mx-auto max-w-4xl px-4 py-16 text-center">
+          <div className="mb-6 inline-flex items-center justify-center rounded-full border-2 border-black bg-neo-pink p-4">
+            <Heart size={32} />
+          </div>
+          <h2 className="mb-6 text-3xl font-black md:text-4xl">Zakaj 4Shifter?</h2>
+          <p className="mx-auto max-w-2xl text-xl leading-relaxed font-medium text-gray-700">
+            4Shifter je naredil delavec za sodelavce.
+            <br />
+            Nobenih podjetij, nobenih naročnin, nobene prodaje.
+            <br />
+            <span className="font-bold text-black">Samo orodje, ki dela življenje v 4-izmenskem sistemu lažje.</span>
+          </p>
+        </div>
+      </section>
+
+      {/* Trust & Privacy Section */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="rounded-2xl border-2 border-black bg-white p-8 shadow-neo md:p-12">
+          <div className="grid items-center gap-8 md:grid-cols-2">
+            <div>
+              <div className="mb-4 inline-flex items-center justify-center rounded-xl border-2 border-black bg-neo-cyan p-3">
+                <Shield size={28} />
+              </div>
+              <h2 className="mb-4 text-3xl font-black">Tvoji podatki, tvoja stvar</h2>
+              <p className="text-lg font-medium text-gray-600">
+                Varnost in zasebnost sta osnova. Brez skritih stroškov.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="text-neo-cyan" size={24} />
+                <span className="text-lg font-bold">Podatki ostanejo pri tebi</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="text-neo-cyan" size={24} />
+                <span className="text-lg font-bold">Brez oglasov, brez sledenja</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="text-neo-cyan" size={24} />
+                <span className="text-lg font-bold">Brezplačno za vedno</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="rounded-2xl border-2 border-black bg-neo-yellow p-8 text-center shadow-neo md:p-16">
+          <h2 className="mb-4 text-4xl font-black md:text-5xl">Pripravljeni?</h2>
+          <p className="mb-8 text-xl font-medium opacity-90">
+            Začni uporabljati 4Shifter danes.
+          </p>
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <Button onClick={handleSignUp} size="lg" className="w-full transform shadow-neo transition-all hover:-translate-y-1 hover:shadow-neo-hover sm:w-auto">
+              Ustvari račun
+              {' '}
+              <ArrowRight size={20} />
+            </Button>
+            <Button onClick={handleSignIn} variant="secondary" size="lg" className="w-full sm:w-auto">
+              Prijava
+            </Button>
           </div>
         </div>
       </section>
@@ -205,14 +287,14 @@ export default function LandingPage() {
               onClick={() => router.push('/privacy')}
               className="text-sm text-gray-400 transition-colors hover:text-white"
             >
-              Privacy Policy
+              Politika zasebnosti
             </button>
             <button
               type="button"
               onClick={() => router.push('/terms')}
               className="text-sm text-gray-400 transition-colors hover:text-white"
             >
-              Terms of Service
+              Pogoji uporabe
             </button>
           </div>
           <p className="font-mono text-sm text-gray-400">

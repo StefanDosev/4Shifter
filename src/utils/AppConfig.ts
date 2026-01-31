@@ -5,7 +5,7 @@ const localePrefix: LocalePrefixMode = 'as-needed';
 // FIXME: Update this configuration file based on your project information
 export const AppConfig = {
   name: '4Shifter',
-  locales: ['en'],
-  defaultLocale: 'en',
+  locales: ['en', 'sl'],
+  defaultLocale: 'sl',
   localePrefix,
 };
