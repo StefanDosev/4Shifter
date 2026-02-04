@@ -1,6 +1,6 @@
 {
   "RootLayout": {
-    "dashboard_link": "Dashboard",
+    "dashboard_link": "Home",
     "about_link": "About",
     "counter_link": "Counter",
     "portfolio_link": "Portfolio",
@@ -10,11 +10,6 @@
   "BaseTemplate": {
     "description": "Starter code for your Nextjs Boilerplate with Tailwind CSS",
     "made_with": "Made with <author></author>."
-  },
-  "Index": {
-    "meta_title": "Next.js Boilerplate Presentation",
-    "meta_description": "Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework.",
-    "sponsors_title": "Sponsors"
   },
   "Counter": {
     "meta_title": "Counter",
@@ -61,6 +56,7 @@
   },
   "Home": {
     "meta_title": "Home",
+    "title": "Home",
     "hello_message": "Hello {email}!",
     "alternative_message": "Need advanced features? Multi-tenancy & Teams, Roles & Permissions, Shadcn UI, End-to-End Typesafety with oRPC, Stripe Payment, Light / Dark mode. Try <url></url>.",
     "current_shift": "Current Shift",
@@ -71,8 +67,8 @@
     "days": "days",
     "hours": "hours",
     "total_hours": "Total: {hours} hours",
-    "total_nadure": "Paid Overtime (Nadure)",
-    "total_ure": "Banked Hours (Ure)",
+    "total_nadure": "Total Overtime",
+    "total_ure": "Total Hours",
     "days_off_available": "Days Off Available",
     "today": "Today",
     "nadure": "Paid Overtime",
@@ -82,25 +78,169 @@
     "save": "Save Changes",
     "flexTime": "Flex Time"
   },
+  "SmartWidget": {
+    "today": "TODAY",
+    "status": "Status",
+    "morning": "Morning · 06:00–14:00",
+    "afternoon": "Afternoon · 14:00–22:00",
+    "night": "Night · 22:00–06:00",
+    "off": "You're off today",
+    "day_progress": "Day {current} / {total}",
+    "days_until_off": "{days} days until off",
+    "days_until_off_one": "1 day until off",
+    "last_workday": "Last workday",
+    "tomorrow_off": "Tomorrow off 🎉",
+    "off_days": "Days off",
+    "days_off_remaining": "{days} more days off",
+    "days_off_remaining_one": "1 more day off",
+    "next_shift": "Next shift",
+    "next_shift_tomorrow": "{shift} · tomorrow {time}",
+    "next_shift_day": "{shift} · {day}",
+    "vacation": "Vacation 🏖",
+    "back_to_work": "Back to work",
+    "flex_day": "Flex day",
+    "flex_used": "1 flex day used",
+    "flex_remaining": "Remaining: {days} days",
+    "extra_work": "Extra work",
+    "extra_choice": "Selected",
+    "extra_plus_hours": "plus hours",
+    "extra_paid": "paid",
+    "change_choice": "Change selection",
+    "night_ends_tomorrow": "Shift ends tomorrow"
+  },
+  "Legend": {
+    "title": "Legend",
+    "morning": "Morning (I)",
+    "afternoon": "Afternoon (II)",
+    "night": "Night (III)",
+    "off": "Off",
+    "vacation": "Vacation",
+    "flex_time": "Flex Time",
+    "holiday": "Holiday",
+    "working_holiday": "Working Holiday"
+  },
   "Calendar": {
     "meta_title": "Shift Calendar",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun",
+    "flex_label": "FLEX",
+    "work_label": "WORK",
+    "holiday_label": "HOL"
+  },
+  "Index": {
+    "meta_title": "4Shifter - Your Shift Schedule",
+    "meta_description": "Check your shift, track overtime, and plan vacation without the headache.",
+    "tagline": "✓ Free • No Ads • No Data Selling",
+    "title": "Your Shift Schedule.",
+    "title_highlight": "Always at Hand.",
+    "description": "Check your shift, track overtime, and plan vacation – without the headache.",
+    "cta_create": "Create Account",
+    "cta_signin": "Sign In",
+    "cta_hint": "Setup takes less than a minute.",
+    "roster_title": "Who's working today?",
+    "roster_live": "Live Status",
+    "roster_group": "Group",
+    "feature_title": "Built for Our Schedule",
+    "feature_desc": "Everything you need. Nothing more.",
+    "feature_1_title": "Shift Calendar",
+    "feature_1_desc": "Always know when you're working and who's on shift with you.",
+    "feature_2_title": "Overtime in One Place",
+    "feature_2_desc": "Log your overtime. Choose: payout or days off.",
+    "feature_3_title": "Vacation & Flex",
+    "feature_3_desc": "Plan vacation and days off without paper slips.",
+    "why_title": "Why 4Shifter?",
+    "why_p1": "4Shifter was built by a worker for fellow workers.",
+    "why_p2": "No corporations, no subscriptions, no selling out.",
+    "why_p3": "Just a tool making life in a 4-shift system easier.",
+    "trust_badge": "Your Data, Your Business",
+    "trust_desc": "Security and privacy are the foundation. No hidden costs.",
+    "trust_point_1": "Data stays with you",
+    "trust_point_2": "No ads, no tracking",
+    "trust_point_3": "Free forever",
+    "final_cta_title": "Ready?",
+    "final_cta_desc": "Start using 4Shifter today."
+  },
+  "Navbar": {
+    "about": "About Us",
+    "signin": "Sign In",
+    "signup": "Sign Up"
+  },
+  "Footer": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "Terms": {
+    "meta_title": "Terms of Service",
+    "meta_description": "Terms of Service for 4Shifter.",
+    "title": "Terms of Service",
+    "last_updated": "Last updated:",
+    "back": "Back to Home"
   },
   "UserProfile": {
     "meta_title": "User Profile"
   },
   "HomeLayout": {
-    "dashboard_link": "Dashboard",
+    "dashboard_link": "Home",
     "user_profile_link": "Manage your account",
     "sign_out": "Sign out"
   },
   "Privacy": {
     "meta_title": "Privacy Policy",
-    "meta_description": "Learn how we collect, use, and protect your personal data."
+    "meta_description": "Learn how we collect, use, and protect your personal data.",
+    "title": "Privacy Policy",
+    "last_updated": "Last updated:",
+    "back": "Back to Home"
   },
-  "Terms": {
-    "meta_title": "Terms of Service",
-    "meta_description": "Read our terms and conditions for using 4Shifter."
+  "DayDetailModal": {
+    "title": "Day Details",
+    "nadure": "Paid Overtime (Nadure)",
+    "ure": "Banked Hours (Ure)",
+    "vacation": "Vacation",
+    "sick": "Sick Leave",
+    "save": "Save Changes",
+    "hours": "hours",
+    "flexTime": "Flex Time (Unpaid)",
+    "holiday": "Holiday",
+    "remaining": "remaining",
+    "useBanked": "Use Banked Hours",
+    "useBankedDesc": "Enter negative value to use (e.g. -8)",
+    "workedShiftType": "Worked Shift Type",
+    "quickAdd": "Quick Add (8 Hours)"
+  },
+  "Onboarding": {
+    "step_personal": "Personal",
+    "step_shift": "Shift",
+    "step_balances": "Balances",
+    "personal_title": "Who are you?",
+    "personal_desc": "Enter your name to personalize your experience.",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "first_name_placeholder": "Jane",
+    "last_name_placeholder": "Doe",
+    "shift_title": "Choose your Shift",
+    "shift_desc": "Which shift pattern are you currently on?",
+    "group_a": "Group A",
+    "group_b": "Group B",
+    "group_c": "Group C",
+    "group_d": "Group D",
+    "balances_title": "Current Balances",
+    "balances_desc": "Set your starting balances for accurate tracking.",
+    "vacation_label": "Vacation Balance (Days)",
+    "vacation_hint": "Days remaining right now.",
+    "flex_label": "Flex Time Balance (Days)",
+    "flex_hint": "Days banked right now.",
+    "next": "Next",
+    "back": "Back",
+    "saving": "Saving...",
+    "finish": "Finish Setup",
+    "error_failed": "Failed to save onboarding data",
+    "error_system": "A system error occurred. Please try again."
   }
 }

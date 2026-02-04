@@ -1,4 +1,5 @@
 import { Briefcase, Calendar, Palmtree, Pill, Sun, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Button } from '@/components/ui/Button';
 
@@ -19,39 +20,9 @@ type DayDetailModalProps = {
   dateStr: string;
   data: DailyStats;
   onUpdate: (date: string, updates: Partial<DailyStats>) => void;
-  locale: string;
   shiftType?: 'I' | 'II' | 'III' | 'REST';
   vacationBalance?: { used: number; total: number; remaining: number };
   flexTimeBalance?: { used: number; total: number; remaining: number };
-};
-
-const TRANSLATIONS = {
-  en: {
-    nadure: 'Paid Overtime (Nadure)',
-    ure: 'Banked Hours (Ure)',
-    vacation: 'Vacation',
-    sick: 'Sick Leave',
-    save: 'Save Changes',
-    hours: 'hours',
-    flexTime: 'Flex Time (Unpaid)',
-    holiday: 'Holiday',
-    remaining: 'remaining',
-    useBanked: 'Use Banked Hours',
-    useBankedDesc: 'Enter negative value to use (e.g. -8)',
-  },
-  sl: {
-    nadure: 'Nadure (Plačane)',
-    ure: 'Ure (Koriščenje)',
-    vacation: 'Dopust',
-    sick: 'Bolniška',
-    save: 'Shrani',
-    hours: 'ur',
-    flexTime: 'Flex Time (Neplačano)',
-    holiday: 'Praznik',
-    remaining: 'preostalo',
-    useBanked: 'Koristi Ure',
-    useBankedDesc: 'Vnesi negativno vrednost za koriščenje (npr. -8)',
-  },
 };
 
 export const DayDetailModal: React.FC<DayDetailModalProps> = ({
@@ -60,23 +31,31 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
   dateStr,
   data,
   onUpdate,
-  locale,
   shiftType = 'REST',
   vacationBalance,
   flexTimeBalance,
 }) => {
+  const t = useTranslations('DayDetailModal');
   const [localData, setLocalData] = React.useState<DailyStats>(data);
 
-  // Reset local state when modal opens or data changes externally
   React.useEffect(() => {
-    setLocalData(data);
-  }, [data, isOpen]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
   }
 
-  const t = TRANSLATIONS[locale as keyof typeof TRANSLATIONS] || TRANSLATIONS.en;
   const isRestDay = shiftType === 'REST';
 
   const handleLocalUpdate = (updates: Partial<DailyStats>) => {
@@ -90,23 +69,18 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-      onClick={onClose}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') {
-          onClose();
-        }
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
     >
+      <button
+        type="button"
+        className="fixed inset-0 bg-black/50"
+        onClick={onClose}
+        aria-label="Close modal"
+      />
       <div
-        className="w-full max-w-md overflow-hidden rounded-xl border-2 border-black bg-white shadow-neo"
-        onClick={e => e.stopPropagation()}
+        className="relative z-10 w-full max-w-md overflow-hidden rounded-xl border-2 border-black bg-white shadow-neo"
         role="dialog"
         aria-modal="true"
-        onKeyDown={e => e.stopPropagation()}
-        tabIndex={-1}
       >
 
         {/* Header */}
@@ -126,13 +100,13 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               <div className="rounded-md border-2 border-black bg-neo-yellow p-2">
                 <Sun size={20} />
               </div>
-              <label className="text-lg font-bold">{t.nadure}</label>
+              <label className="text-lg font-bold">{t('nadure')}</label>
             </div>
             <div className="flex items-center gap-4 rounded-lg border-2 border-black/10 bg-gray-50 p-2">
               <Button size="sm" variant="secondary" onClick={() => handleLocalUpdate({ nadure: Math.max(0, (localData.nadure || 0) - 1) })}>-</Button>
               <span className="w-12 text-center font-mono text-xl font-bold">{localData.nadure || 0}</span>
               <Button size="sm" variant="secondary" onClick={() => handleLocalUpdate({ nadure: (localData.nadure || 0) + 1 })}>+</Button>
-              <span className="ml-auto text-sm text-gray-500">{t.hours}</span>
+              <span className="ml-auto text-sm text-gray-500">{t('hours')}</span>
             </div>
           </div>
 
@@ -142,20 +116,20 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               <div className="rounded-md border-2 border-black bg-neo-cyan p-2">
                 <Briefcase size={20} />
               </div>
-              <label className="text-lg font-bold">{t.ure}</label>
+              <label className="text-lg font-bold">{t('ure')}</label>
             </div>
             <div className="flex items-center gap-4 rounded-lg border-2 border-black/10 bg-gray-50 p-2">
               <Button size="sm" variant="secondary" onClick={() => handleLocalUpdate({ ure: (localData.ure || 0) - 1 })}>-</Button>
               <span className="w-12 text-center font-mono text-xl font-bold">{localData.ure || 0}</span>
               <Button size="sm" variant="secondary" onClick={() => handleLocalUpdate({ ure: (localData.ure || 0) + 1 })}>+</Button>
-              <span className="ml-auto text-sm text-gray-500">{t.hours}</span>
+              <span className="ml-auto text-sm text-gray-500">{t('hours')}</span>
             </div>
           </div>
 
           {/* Shift Type Selector (Only if Nadure or Ure > 0) */}
           {((localData.nadure || 0) > 0 || (localData.ure || 0) > 0) && (
             <div className="space-y-2" role="group" aria-labelledby="shift-type-label">
-              <p id="shift-type-label" className="text-sm font-bold text-gray-600">Worked Shift Type</p>
+              <p id="shift-type-label" className="text-sm font-bold text-gray-600">{t('workedShiftType')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {(['I', 'II', 'III'] as const).map(type => (
                   <button
@@ -180,7 +154,7 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             <>
               <div className="h-px bg-gray-200" />
               <div className="space-y-2">
-                <p className="text-sm font-bold text-gray-600">Quick Add (8 Hours)</p>
+                <p className="text-sm font-bold text-gray-600">{t('quickAdd')}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <Button
                     variant="secondary"
@@ -188,7 +162,10 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
                     className="flex-col gap-1 py-4"
                   >
                     <Sun size={20} />
-                    <span className="text-xs">+8h Nadure</span>
+                    <span className="text-xs">
+                      +8h
+                      {t('nadure')}
+                    </span>
                   </Button>
                   <Button
                     variant="secondary"
@@ -196,7 +173,10 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
                     className="flex-col gap-1 py-4"
                   >
                     <Briefcase size={20} />
-                    <span className="text-xs">+8h Ure</span>
+                    <span className="text-xs">
+                      +8h
+                      {t('ure')}
+                    </span>
                   </Button>
                 </div>
               </div>
@@ -222,12 +202,12 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               >
                 <Palmtree size={24} />
                 <div className="text-center">
-                  <span className="block text-sm font-bold">{t.vacation}</span>
+                  <span className="block text-sm font-bold">{t('vacation')}</span>
                   {vacationBalance && (
                     <span className="text-[10px] text-gray-500">
                       {vacationBalance.remaining}
                       {' '}
-                      {t.remaining}
+                      {t('remaining')}
                     </span>
                   )}
                 </div>
@@ -247,12 +227,12 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               >
                 <Calendar size={24} />
                 <div className="text-center">
-                  <span className="block text-sm font-bold">{t.flexTime}</span>
+                  <span className="block text-sm font-bold">{t('flexTime')}</span>
                   {flexTimeBalance && (
                     <span className="text-[10px] text-gray-500">
                       {flexTimeBalance.remaining}
                       {' '}
-                      {t.remaining}
+                      {t('remaining')}
                     </span>
                   )}
                 </div>
@@ -265,7 +245,7 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
                 type="button"
               >
                 <Pill size={24} />
-                <span className="text-sm font-bold">{t.sick}</span>
+                <span className="text-sm font-bold">{t('sick')}</span>
               </button>
 
               {/* Use Banked Hours - Only show if NOT Rest Day */}
@@ -277,7 +257,7 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
                 >
                   <Briefcase size={24} />
                   <div className="text-center">
-                    <span className="block text-sm font-bold">{t.useBanked}</span>
+                    <span className="block text-sm font-bold">{t('useBanked')}</span>
                     <span className="text-[10px] text-gray-500">-8h</span>
                   </div>
                 </button>
@@ -287,7 +267,7 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               {localData.isHoliday && (
                 <div className="flex flex-col items-center gap-2 rounded-xl border-2 border-black bg-pink-200 p-4 opacity-80 shadow-none">
                   <Sun size={24} />
-                  <span className="text-sm font-bold">{t.holiday}</span>
+                  <span className="text-sm font-bold">{t('holiday')}</span>
                 </div>
               )}
             </div>
@@ -297,7 +277,7 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
 
         {/* Footer */}
         <div className="border-t-2 border-black bg-gray-50 p-4">
-          <Button className="w-full" onClick={handleSave}>{t.save}</Button>
+          <Button className="w-full" onClick={handleSave}>{t('save')}</Button>
         </div>
 
       </div>

@@ -2,8 +2,9 @@
 
 import type { ShiftGroup } from '@/types';
 import { format } from 'date-fns';
-import { sl } from 'date-fns/locale';
+import { enUS, sl } from 'date-fns/locale';
 import { ArrowRight, Calendar, CheckCircle, Clock, Coins, Heart, Shield, Umbrella } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { LoadingScreen } from '@/components/LoadingScreen';
@@ -13,6 +14,10 @@ import { SHIFT_DEFINITIONS } from '@/constants';
 import { getShiftForDate } from '@/utils/dateUtils';
 
 export default function LandingPage() {
+  const tIndex = useTranslations('Index');
+  const tNav = useTranslations('Navbar');
+  const tFooter = useTranslations('Footer');
+  const locale = useLocale();
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -55,17 +60,17 @@ export default function LandingPage() {
                 onClick={() => router.push('/about')}
                 className="mr-4 hidden font-bold decoration-2 underline-offset-4 hover:underline sm:block"
               >
-                O nas
+                {tNav('about')}
               </button>
               <button
                 type="button"
                 onClick={handleSignIn}
                 className="mr-4 hidden font-bold decoration-2 underline-offset-4 hover:underline sm:block"
               >
-                Prijava
+                {tNav('signin')}
               </button>
               <Button onClick={handleSignUp} size="sm" className="hidden sm:flex">
-                Registracija
+                {tNav('signup')}
               </Button>
             </>
           )}
@@ -81,28 +86,28 @@ export default function LandingPage() {
             {/* Left: Copy */}
             <div className="space-y-6 text-center md:text-left">
               <div className="inline-block -rotate-2 transform animate-float rounded-full border-2 border-black bg-white px-4 py-1 text-sm font-bold shadow-neo-sm">
-                ✓ Brezplačno • Brez oglasov • Brez prodaje podatkov
+                {tIndex('tagline')}
               </div>
               <h1 className="text-4xl leading-[1.1] font-black tracking-tight md:text-6xl">
-                Tvoj urnik izmen.
+                {tIndex('title')}
                 <br />
-                <span className="text-white" style={{ textShadow: '4px 4px 0 #1a1a1a' }}>Vedno pri roki.</span>
+                <span className="text-white" style={{ textShadow: '4px 4px 0 #1a1a1a' }}>{tIndex('title_highlight')}</span>
               </h1>
               <p className="mx-auto max-w-lg text-xl leading-relaxed font-medium opacity-90 md:mx-0">
-                Preveri izmeno, sledi nadurom in načrtuj dopust – brez glavobolov.
+                {tIndex('description')}
               </p>
               <div className="flex flex-col justify-center gap-4 pt-4 sm:flex-row md:justify-start">
                 <Button onClick={handleSignUp} size="lg" className="w-full transform shadow-neo transition-all hover:-translate-y-1 hover:shadow-neo-hover sm:w-auto">
-                  Ustvari račun
+                  {tIndex('cta_create')}
                   {' '}
                   <ArrowRight size={20} />
                 </Button>
                 <Button onClick={handleSignIn} variant="secondary" size="lg" className="w-full sm:w-auto">
-                  Prijava
+                  {tIndex('cta_signin')}
                 </Button>
               </div>
               <p className="text-sm font-medium text-gray-700">
-                Registracija traja manj kot minuto.
+                {tIndex('cta_hint')}
               </p>
             </div>
 
@@ -113,10 +118,10 @@ export default function LandingPage() {
                 <div className="mb-6 flex items-center justify-between border-b-2 border-gray-100 pb-4">
                   <div className="flex items-center gap-2">
                     <Clock className="text-neo-cyan" />
-                    <h2 className="text-xl font-black">Kdo danes dela?</h2>
+                    <h2 className="text-xl font-black">{tIndex('roster_title')}</h2>
                   </div>
-                  <span className="rounded bg-black px-2 py-1 text-sm font-bold text-white">
-                    {format(today, 'EEE, d MMM', { locale: sl })}
+                  <span className="rounded bg-black px-2 py-1 text-sm font-bold text-white uppercase">
+                    {format(today, 'EEE, d MMM', { locale: locale === 'sl' ? sl : enUS })}
                   </span>
                 </div>
 
@@ -132,13 +137,13 @@ export default function LandingPage() {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-xs font-bold text-gray-400 uppercase">
-                            Skupina
+                            {tIndex('roster_group')}
                             {' '}
                             {group}
                           </span>
                           <div className="flex items-center gap-2">
                             <span className={`h-3 w-3 rounded-full border border-black ${shiftDef.color}`}></span>
-                            <span className="font-bold">{shiftDef.labelSl}</span>
+                            <span className="font-bold">{locale === 'sl' ? shiftDef.labelSl : shiftDef.labelEn}</span>
                           </div>
                         </div>
                       </div>
@@ -148,7 +153,7 @@ export default function LandingPage() {
 
                 <div className="mt-6 border-t-2 border-gray-100 pt-4 text-center">
                   <p className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                    Živo stanje
+                    {tIndex('roster_live')}
                   </p>
                 </div>
               </div>
@@ -166,8 +171,8 @@ export default function LandingPage() {
       {/* Feature Grid */}
       <section className="mx-auto max-w-6xl px-4 py-24">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-black">Narejeno za naš urnik</h2>
-          <p className="text-xl text-gray-600">Vse kar rabiš. Nič več.</p>
+          <h2 className="mb-4 text-4xl font-black">{tIndex('feature_title')}</h2>
+          <p className="text-xl text-gray-600">{tIndex('feature_desc')}</p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
@@ -176,9 +181,9 @@ export default function LandingPage() {
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-neo-cyan transition-transform group-hover:rotate-6">
               <Calendar size={32} />
             </div>
-            <h3 className="mb-3 text-2xl font-black">Koledar izmen</h3>
+            <h3 className="mb-3 text-2xl font-black">{tIndex('feature_1_title')}</h3>
             <p className="leading-relaxed font-medium text-gray-600">
-              Vedno veš, kdaj delaš in kdo je na izmeni s teboj.
+              {tIndex('feature_1_desc')}
             </p>
           </div>
 
@@ -187,9 +192,9 @@ export default function LandingPage() {
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-neo-pink transition-transform group-hover:-rotate-6">
               <Coins size={32} />
             </div>
-            <h3 className="mb-3 text-2xl font-black">Nadure na enem mestu</h3>
+            <h3 className="mb-3 text-2xl font-black">{tIndex('feature_2_title')}</h3>
             <p className="leading-relaxed font-medium text-gray-600">
-              Beleži si nadure. Izberi: plačilo ali prosti dnevi.
+              {tIndex('feature_2_desc')}
             </p>
           </div>
 
@@ -198,9 +203,9 @@ export default function LandingPage() {
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-neo-violet transition-transform group-hover:rotate-12">
               <Umbrella size={32} />
             </div>
-            <h3 className="mb-3 text-2xl font-black">Dopust in flex</h3>
+            <h3 className="mb-3 text-2xl font-black">{tIndex('feature_3_title')}</h3>
             <p className="leading-relaxed font-medium text-gray-600">
-              Načrtuj dopust in prosti dneve brez papirjev.
+              {tIndex('feature_3_desc')}
             </p>
           </div>
         </div>
@@ -212,13 +217,13 @@ export default function LandingPage() {
           <div className="mb-6 inline-flex items-center justify-center rounded-full border-2 border-black bg-neo-pink p-4">
             <Heart size={32} />
           </div>
-          <h2 className="mb-6 text-3xl font-black md:text-4xl">Zakaj 4Shifter?</h2>
+          <h2 className="mb-6 text-3xl font-black md:text-4xl">{tIndex('why_title')}</h2>
           <p className="mx-auto max-w-2xl text-xl leading-relaxed font-medium text-gray-700">
-            4Shifter je naredil delavec za sodelavce.
+            {tIndex('why_p1')}
             <br />
-            Nobenih podjetij, nobenih naročnin, nobene prodaje.
+            {tIndex('why_p2')}
             <br />
-            <span className="font-bold text-black">Samo orodje, ki dela življenje v 4-izmenskem sistemu lažje.</span>
+            <span className="font-bold text-black">{tIndex('why_p3')}</span>
           </p>
         </div>
       </section>
@@ -231,23 +236,23 @@ export default function LandingPage() {
               <div className="mb-4 inline-flex items-center justify-center rounded-xl border-2 border-black bg-neo-cyan p-3">
                 <Shield size={28} />
               </div>
-              <h2 className="mb-4 text-3xl font-black">Tvoji podatki, tvoja stvar</h2>
+              <h2 className="mb-4 text-3xl font-black">{tIndex('trust_badge')}</h2>
               <p className="text-lg font-medium text-gray-600">
-                Varnost in zasebnost sta osnova. Brez skritih stroškov.
+                {tIndex('trust_desc')}
               </p>
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <CheckCircle className="text-neo-cyan" size={24} />
-                <span className="text-lg font-bold">Podatki ostanejo pri tebi</span>
+                <span className="text-lg font-bold">{tIndex('trust_point_1')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle className="text-neo-cyan" size={24} />
-                <span className="text-lg font-bold">Brez oglasov, brez sledenja</span>
+                <span className="text-lg font-bold">{tIndex('trust_point_2')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle className="text-neo-cyan" size={24} />
-                <span className="text-lg font-bold">Brezplačno za vedno</span>
+                <span className="text-lg font-bold">{tIndex('trust_point_3')}</span>
               </div>
             </div>
           </div>
@@ -257,18 +262,18 @@ export default function LandingPage() {
       {/* Final CTA Section */}
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="rounded-2xl border-2 border-black bg-neo-yellow p-8 text-center shadow-neo md:p-16">
-          <h2 className="mb-4 text-4xl font-black md:text-5xl">Pripravljeni?</h2>
+          <h2 className="mb-4 text-4xl font-black md:text-5xl">{tIndex('final_cta_title')}</h2>
           <p className="mb-8 text-xl font-medium opacity-90">
-            Začni uporabljati 4Shifter danes.
+            {tIndex('final_cta_desc')}
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Button onClick={handleSignUp} size="lg" className="w-full transform shadow-neo transition-all hover:-translate-y-1 hover:shadow-neo-hover sm:w-auto">
-              Ustvari račun
+              {tIndex('cta_create')}
               {' '}
               <ArrowRight size={20} />
             </Button>
             <Button onClick={handleSignIn} variant="secondary" size="lg" className="w-full sm:w-auto">
-              Prijava
+              {tIndex('cta_signin')}
             </Button>
           </div>
         </div>
@@ -287,14 +292,14 @@ export default function LandingPage() {
               onClick={() => router.push('/privacy')}
               className="text-sm text-gray-400 transition-colors hover:text-white"
             >
-              Politika zasebnosti
+              {tFooter('privacy')}
             </button>
             <button
               type="button"
               onClick={() => router.push('/terms')}
               className="text-sm text-gray-400 transition-colors hover:text-white"
             >
-              Pogoji uporabe
+              {tFooter('terms')}
             </button>
           </div>
           <p className="font-mono text-sm text-gray-400">

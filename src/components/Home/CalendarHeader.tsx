@@ -1,18 +1,19 @@
 'use client';
 
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 
 type CalendarHeaderProps = {
   currentDate: Date;
-  onPrevMonth: () => void;
-  onNextMonth: () => void;
+  onPrevMonthAction: () => void;
+  onNextMonthAction: () => void;
 };
 
-export function CalendarHeader({ currentDate, onPrevMonth, onNextMonth }: CalendarHeaderProps) {
+export function CalendarHeader({ currentDate, onPrevMonthAction, onNextMonthAction }: CalendarHeaderProps) {
   const t = useTranslations('Calendar');
-  const monthName = currentDate.toLocaleString('default', { month: 'long' });
+  const locale = useLocale();
+  const monthName = currentDate.toLocaleString(locale, { month: 'long' });
   const year = currentDate.getFullYear();
 
   return (
@@ -24,11 +25,11 @@ export function CalendarHeader({ currentDate, onPrevMonth, onNextMonth }: Calend
         {year}
       </h2>
       <div className="flex gap-2">
-        <Button variant="secondary" size="sm" onClick={onPrevMonth}>
+        <Button variant="secondary" size="sm" onClick={onPrevMonthAction}>
           <ChevronLeft size={18} />
           <span className="hidden sm:inline">{t('previous')}</span>
         </Button>
-        <Button variant="secondary" size="sm" onClick={onNextMonth}>
+        <Button variant="secondary" size="sm" onClick={onNextMonthAction}>
           <span className="hidden sm:inline">{t('next')}</span>
           <ChevronRight size={18} />
         </Button>

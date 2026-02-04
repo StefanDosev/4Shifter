@@ -9,6 +9,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import { CalendarDay } from './CalendarDay';
 
 type ShiftType = 'I' | 'II' | 'III' | 'REST';
@@ -42,12 +43,13 @@ export function CalendarGrid({ currentDate, schedule, onDayClickAction }: Calend
   const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
   const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
+  const t = useTranslations('Calendar');
+  const WEEKDAY_NAMES = [t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat'), t('sun')];
+
   const days = eachDayOfInterval({
     start: startDate,
     end: endDate,
   });
-
-  const WEEKDAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   // Helper to find schedule for a specific date
   const getScheduleForDate = (date: Date) => {

@@ -18,7 +18,13 @@ export async function generateMetadata(props: {
   };
 }
 
-export default function TermsOfServicePage() {
+export default async function TermsOfServicePage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  const t = await getTranslations({
+    locale,
+    namespace: 'Terms',
+  });
+
   return (
     <div className="min-h-screen bg-neo-white">
       <div className="sticky top-0 z-40 bg-white">
@@ -26,13 +32,13 @@ export default function TermsOfServicePage() {
       </div>
 
       <main className="mx-auto max-w-4xl px-4 py-12">
-        <h1 className="mb-8 text-4xl font-black">Terms of Service</h1>
+        <h1 className="mb-8 text-4xl font-black">{t('title')}</h1>
 
         <div className="prose prose-lg max-w-none space-y-8">
           <p className="text-gray-600">
-            <strong>Last updated:</strong>
+            <strong>{t('last_updated')}</strong>
             {' '}
-            {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {new Date().toLocaleDateString(locale === 'sl' ? 'sl-SI' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
 
           <section>
@@ -153,7 +159,9 @@ export default function TermsOfServicePage() {
 
           <div className="mt-12 border-t-2 border-gray-200 pt-8">
             <Link href="/" className="font-bold text-neo-cyan underline hover:text-neo-black">
-              ← Back to Home
+              ←
+              {' '}
+              {t('back')}
             </Link>
           </div>
         </div>

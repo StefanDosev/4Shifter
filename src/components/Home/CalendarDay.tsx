@@ -1,6 +1,7 @@
 'use client';
 
 import { Briefcase, Palmtree, Pill, Sun } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { SHIFT_COLORS } from './constants';
 
 type ShiftType = 'I' | 'II' | 'III' | 'REST';
@@ -95,6 +96,8 @@ export function CalendarDay({
   // Opacity for non-current month days
   const opacityClass = isCurrentMonth ? 'opacity-100' : 'opacity-40';
 
+  const t = useTranslations('Calendar');
+
   return (
     <button
       type="button"
@@ -142,10 +145,10 @@ export function CalendarDay({
         )}
         {isVacation && <Palmtree size={16} className="mx-auto text-black" />}
         {isSickLeave && <Pill size={16} className="mx-auto text-black" />}
-        {isFlexTime && <span className="mx-auto text-[10px] font-bold">FLEX</span>}
+        {isFlexTime && <span className="mx-auto text-[10px] font-bold">{t('flex_label')}</span>}
         {isHoliday && (
           <div className="flex flex-col items-center">
-            <span className="text-[10px] font-bold">{isWorkingHoliday ? 'WORK' : 'HOL'}</span>
+            <span className="text-[10px] font-bold">{isWorkingHoliday ? t('work_label') : t('holiday_label')}</span>
             {holidayName && (
               <span className="text-center text-[8px] leading-tight">
                 {holidayName.substring(0, 8)}

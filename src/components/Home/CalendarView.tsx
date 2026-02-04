@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { getMonthlyTotals, updateDailyStats } from '@/actions/DailyStatsActions';
 import { getMonthlySchedule } from '@/actions/ShiftActions';
@@ -36,6 +36,7 @@ export function CalendarView({
 }: CalendarViewProps) {
   const [modalDate, setModalDate] = useState<string | null>(null);
   const locale = useLocale();
+  const t = useTranslations('Legend');
   // Map raw schedule to CalendarGrid format
   const mappedSchedule = schedule.map(d => ({
     date: d.date,
@@ -115,8 +116,8 @@ export function CalendarView({
     <div className="space-y-6">
       <CalendarHeader
         currentDate={currentDate}
-        onPrevMonth={onPrevMonthAction}
-        onNextMonth={onNextMonthAction}
+        onPrevMonthAction={onPrevMonthAction}
+        onNextMonthAction={onNextMonthAction}
       />
 
       <div className={`transition-opacity duration-200 ${loading ? 'opacity-50' : 'opacity-100'}`}>
@@ -131,12 +132,12 @@ export function CalendarView({
         const item = mappedSchedule.find(s => s.date === modalDate);
         return (
           <DayDetailModal
+            key={modalDate}
             isOpen={!!modalDate}
             onClose={handleModalClose}
             dateStr={modalDate}
             data={getDayData(modalDate)}
             onUpdate={handleUpdateDay}
-            locale={locale}
             shiftType={(item?.shiftType as any) || 'REST'}
             vacationBalance={vacationBalance}
             flexTimeBalance={flexTimeBalance}
@@ -146,42 +147,42 @@ export function CalendarView({
 
       {/* Legend */}
       <div className="rounded-xl border-2 border-black bg-white p-4 shadow-neo">
-        <h3 className="mb-3 text-sm font-bold tracking-wide text-gray-900 uppercase">Legend</h3>
+        <h3 className="mb-3 text-sm font-bold tracking-wide text-gray-900 uppercase">{t('title')}</h3>
         <div className="flex flex-wrap gap-3 text-xs font-bold">
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-neo-yellow" />
-            <span>Morning (I)</span>
+            <span>{t('morning')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-neo-cyan" />
-            <span>Afternoon (II)</span>
+            <span>{t('afternoon')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-neo-violet" />
-            <span>Night (III)</span>
+            <span>{t('night')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-white" />
-            <span>Rest / Off</span>
+            <span>{t('off')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-neo-blue" />
-            <span>Vacation</span>
+            <span>{t('vacation')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-purple-200" />
-            <span>Flex Time</span>
+            <span>{t('flex_time')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-black bg-pink-200" />
-            <span>Holiday</span>
+            <span>{t('holiday')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div
               className="h-4 w-4 rounded-full border-2 border-black"
               style={{ background: 'linear-gradient(135deg, #fbcfe8 50%, #ffc900 50%)' }}
             />
-            <span>Working Holiday</span>
+            <span>{t('working_holiday')}</span>
           </div>
         </div>
       </div>

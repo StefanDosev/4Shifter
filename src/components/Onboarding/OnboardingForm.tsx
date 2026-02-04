@@ -1,18 +1,20 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { completeOnboarding } from '@/actions/OnboardingActions';
 import { Button } from '../ui/Button';
 
-const SHIFT_GROUPS = [
-  { id: 'A', name: 'Group A', description: 'REST' },
-  { id: 'B', name: 'Group B', description: 'II Shift' },
-  { id: 'C', name: 'Group C', description: 'III Shift' },
-  { id: 'D', name: 'Group D', description: 'I Shift' },
+const SHIFT_GROUPS_RAW = [
+  { id: 'A', nameKey: 'group_a', description: 'REST' },
+  { id: 'B', nameKey: 'group_b', description: 'II Shift' },
+  { id: 'C', nameKey: 'group_c', description: 'III Shift' },
+  { id: 'D', nameKey: 'group_d', description: 'I Shift' },
 ] as const;
 
 export function OnboardingForm() {
+  const t = useTranslations('Onboarding');
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -44,7 +46,7 @@ export function OnboardingForm() {
       });
 
       if (!result.success) {
-        setError(result.error || 'Failed to save onboarding data');
+        setError(result.error || t('error_failed'));
         setIsSubmitting(false);
         return;
       }
@@ -52,7 +54,7 @@ export function OnboardingForm() {
       window.location.href = '/home';
     } catch (error) {
       console.error(error);
-      setError('A system error occurred. Please try again.');
+      setError(t('error_system'));
       setIsSubmitting(false);
     }
   };
@@ -72,7 +74,7 @@ export function OnboardingForm() {
               {step > i ? <Check size={16} /> : i}
             </div>
             <div className={`text-sm font-bold ${step >= i ? 'text-black' : 'text-gray-300'}`}>
-              {i === 1 ? 'Personal' : i === 2 ? 'Shift' : 'Balances'}
+              {i === 1 ? t('step_personal') : i === 2 ? t('step_shift') : t('step_balances')}
             </div>
           </div>
         ))}
@@ -88,36 +90,36 @@ export function OnboardingForm() {
         {step === 1 && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-black">Who are you?</h2>
-              <p className="font-bold opacity-60">Enter your name to personalize your experience.</p>
+              <h2 className="text-2xl font-black">{t('personal_title')}</h2>
+              <p className="font-bold opacity-60">{t('personal_desc')}</p>
             </div>
             <div className="space-y-4">
               <div>
-                <label htmlFor="firstName" className="mb-2 block text-sm font-bold">First Name</label>
+                <label htmlFor="firstName" className="mb-2 block text-sm font-bold">{t('first_name')}</label>
                 <input
                   id="firstName"
                   type="text"
                   value={formData.firstName}
                   onChange={e => setFormData({ ...formData, firstName: e.target.value })}
                   className="w-full rounded-lg border-2 border-black p-3 font-medium focus:bg-neo-blue/10 focus:outline-none"
-                  placeholder="Jane"
+                  placeholder={t('first_name_placeholder')}
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="mb-2 block text-sm font-bold">Last Name</label>
+                <label htmlFor="lastName" className="mb-2 block text-sm font-bold">{t('last_name')}</label>
                 <input
                   id="lastName"
                   type="text"
                   value={formData.lastName}
                   onChange={e => setFormData({ ...formData, lastName: e.target.value })}
                   className="w-full rounded-lg border-2 border-black p-3 font-medium focus:bg-neo-blue/10 focus:outline-none"
-                  placeholder="Doe"
+                  placeholder={t('last_name_placeholder')}
                 />
               </div>
             </div>
             <div className="flex justify-end pt-4">
               <Button onClick={handleNext} disabled={!formData.firstName || !formData.lastName}>
-                Next
+                {t('next')}
                 {' '}
                 <ArrowRight size={16} className="ml-2" />
               </Button>
@@ -128,11 +130,11 @@ export function OnboardingForm() {
         {step === 2 && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-black">Choose your Shift</h2>
-              <p className="font-bold opacity-60">Which shift pattern are you currently on?</p>
+              <h2 className="text-2xl font-black">{t('shift_title')}</h2>
+              <p className="font-bold opacity-60">{t('shift_desc')}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              {SHIFT_GROUPS.map(group => (
+              {SHIFT_GROUPS_RAW.map(group => (
                 <button
                   key={group.id}
                   type="button"
@@ -143,7 +145,7 @@ export function OnboardingForm() {
                       : 'border-black bg-white hover:bg-gray-50'
                   }`}
                 >
-                  <div className="font-black">{group.name}</div>
+                  <div className="font-black">{t(group.nameKey as any)}</div>
                   <div className="text-sm font-bold opacity-60">{group.description}</div>
                 </button>
               ))}
@@ -152,10 +154,10 @@ export function OnboardingForm() {
               <Button variant="secondary" onClick={handleBack}>
                 <ArrowLeft size={16} className="mr-2" />
                 {' '}
-                Back
+                {t('back')}
               </Button>
               <Button onClick={handleNext} disabled={!formData.shiftGroup}>
-                Next
+                {t('next')}
                 {' '}
                 <ArrowRight size={16} className="ml-2" />
               </Button>
@@ -166,12 +168,12 @@ export function OnboardingForm() {
         {step === 3 && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-black">Current Balances</h2>
-              <p className="font-bold opacity-60">Set your starting balances for accurate tracking.</p>
+              <h2 className="text-2xl font-black">{t('balances_title')}</h2>
+              <p className="font-bold opacity-60">{t('balances_desc')}</p>
             </div>
             <div className="space-y-4">
               <div>
-                <label htmlFor="vacationBalance" className="mb-2 block text-sm font-bold">Vacation Balance (Days)</label>
+                <label htmlFor="vacationBalance" className="mb-2 block text-sm font-bold">{t('vacation_label')}</label>
                 <input
                   id="vacationBalance"
                   type="number"
@@ -179,10 +181,10 @@ export function OnboardingForm() {
                   onChange={e => setFormData({ ...formData, vacationDaysBalance: Number(e.target.value) })}
                   className="w-full rounded-lg border-2 border-black p-3 font-mono text-xl focus:bg-neo-blue/10 focus:outline-none"
                 />
-                <p className="mt-1 text-xs font-bold text-gray-500">Days remaining right now.</p>
+                <p className="mt-1 text-xs font-bold text-gray-500">{t('vacation_hint')}</p>
               </div>
               <div>
-                <label htmlFor="flexBalance" className="mb-2 block text-sm font-bold">Flex Time Balance (Days)</label>
+                <label htmlFor="flexBalance" className="mb-2 block text-sm font-bold">{t('flex_label')}</label>
                 <input
                   id="flexBalance"
                   type="number"
@@ -190,17 +192,17 @@ export function OnboardingForm() {
                   onChange={e => setFormData({ ...formData, flexDaysBalance: Number(e.target.value) })}
                   className="w-full rounded-lg border-2 border-black p-3 font-mono text-xl focus:bg-neo-blue/10 focus:outline-none"
                 />
-                <p className="mt-1 text-xs font-bold text-gray-500">Days banked right now.</p>
+                <p className="mt-1 text-xs font-bold text-gray-500">{t('flex_hint')}</p>
               </div>
             </div>
             <div className="flex justify-between pt-4">
               <Button variant="secondary" onClick={handleBack}>
                 <ArrowLeft size={16} className="mr-2" />
                 {' '}
-                Back
+                {t('back')}
               </Button>
               <Button onClick={handleSubmit} disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : 'Finish Setup'}
+                {isSubmitting ? t('saving') : t('finish')}
               </Button>
             </div>
           </div>

@@ -7,8 +7,6 @@ import { getMonthlySchedule } from '@/actions/ShiftActions';
 import { checkNeedsOnboarding, getUserShiftGroup } from '@/actions/UserActions';
 import { getAllBalances } from '@/actions/UserStatsActions';
 import { DashboardWrapper } from '@/components/Home/DashboardWrapper';
-import { SmartWidget } from '@/components/Home/SmartWidget';
-import { calculateDaysUntilOff } from '@/utils/shiftUtils';
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string }>;
@@ -24,7 +22,10 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function Home() {
+export default async function Home(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await props.params;
   const { userId } = await auth();
 
   if (!userId) {
@@ -50,26 +51,19 @@ export default async function Home() {
     getAllBalances(),
   ]);
 
-  // Get today's shift
-  const today = now.toISOString().split('T')[0];
-  const todayShift = schedule.find(day => day.date === today);
-  const currentShift = (todayShift?.shift as 'I' | 'II' | 'III' | 'REST') || 'REST';
-
-  // Calculate days until next off
-  const daysUntilOff = calculateDaysUntilOff(now, userGroup);
+  // Get page title translation
+  const t = await getTranslations({ locale, namespace: 'Home' });
 
   return (
     <div className="py-4 sm:py-6">
-      <h1 className="mb-6 text-3xl font-black sm:mb-8 sm:text-4xl">Home</h1>
+      <h1 className="mb-6 text-3xl font-black sm:mb-8 sm:text-4xl">{t('title')}</h1>
 
-      {/* Smart Widget - Today's shift */}
-      <SmartWidget currentShift={currentShift} daysUntilOff={daysUntilOff} />
-
-      {/* Dashboard Wrapper - Manages state and displays StatsBar + Calendar */}
+      {/* Dashboard Wrapper - Contains SmartWidget, StatsBar + Calendar */}
       <DashboardWrapper
         initialSchedule={schedule}
         initialTotals={totals}
         balances={balances}
+        shiftGroup={userGroup}
       />
     </div>
   );
